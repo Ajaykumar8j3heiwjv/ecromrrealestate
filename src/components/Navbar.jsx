@@ -48,7 +48,7 @@ export default function Navbar() {
           <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 011 1V20a1 1 0 01-1 1C9.39 21 3 14.61 3 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.26.2 2.47.57 3.58a1 1 0 01-.24 1.01l-2.21 2.2z"/>
           </svg>
-          +91 98765 43210
+          +91 91760 88519
         </a>
         <Link to="/listings" className="btn-primary" style={{ fontSize: '11px', padding: '10px 22px' }}>
           Find Property

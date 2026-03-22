@@ -13,7 +13,7 @@ const emptyForm = {
   propertyOnFloor: '', totalFloors: '', suitableTime: '', servantAcc: 'No',
   petAllowed: 'Yes', foodPref: 'Veg & Non-Veg', tenants: 'Both (Family / Bachelor)',
   facing: '', propertyAge: '', parking: '', furnishedStatus: 'Fully Furnished',
-  availableFrom: '', isFeatured: true
+  availableFrom: '', isFeatured: true, image: ''
 }
 
 const initialEnquiries = [
@@ -34,6 +34,14 @@ const Icon = ({ path, paths }) => (
 function PropertyModal({ mode, data, onSave, onClose }) {
   const [form, setForm] = useState(data || emptyForm)
   const handle = (e) => setForm({ ...form, [e.target.name]: e.target.value })
+  const onImageChange = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onloadend = () => setForm({ ...form, image: reader.result })
+      reader.readAsDataURL(file)
+    }
+  }
 
   return (
     <div className="admin-modal-bg" onClick={onClose}>
@@ -83,6 +91,15 @@ function PropertyModal({ mode, data, onSave, onClose }) {
                     <option>Plot</option>
                     <option>Commercial</option>
                   </select>
+                </div>
+                <div className="admin-form-group full">
+                  <label>Property Image (Upload)</label>
+                  <input type="file" accept="image/*" onChange={onImageChange} />
+                  {form.image && (
+                    <div style={{ marginTop: '10px' }}>
+                      <img src={form.image} alt="Preview" style={{ height: '80px', borderRadius: '4px', border: '1px solid var(--gold-mid)' }} />
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
