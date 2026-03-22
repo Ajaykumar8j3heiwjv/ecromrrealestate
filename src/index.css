@@ -1,0 +1,263 @@
+/* =============================================
+   ECR OMR REAL ESTATES — Global Design System
+   Color Palette: Black #000 + Gold gradient
+   ============================================= */
+
+:root {
+  /* Gold palette extracted from logo */
+  --gold-light: #F5D98A;
+  --gold-mid: #C9A43D;
+  --gold-dark: #A07820;
+  --gold-deep: #7A5A10;
+  --gold-gradient: linear-gradient(135deg, #F5D98A 0%, #C9A43D 40%, #A07820 70%, #F5D98A 100%);
+  --gold-gradient-h: linear-gradient(90deg, #F5D98A 0%, #C9A43D 50%, #A07820 100%);
+  --gold-shine: linear-gradient(120deg, #7A5A10 0%, #C9A43D 30%, #F5D98A 50%, #C9A43D 70%, #7A5A10 100%);
+
+  /* Dark palette */
+  --black: #000000;
+  --dark-1: #080808;
+  --dark-2: #111111;
+  --dark-3: #1A1A1A;
+  --dark-4: #222222;
+  --dark-5: #2E2E2E;
+
+  /* Neutral */
+  --white: #FFFFFF;
+  --off-white: #F8F4EA;
+  --cream: #F2E8D0;
+  --text-muted: #A09070;
+
+  /* Typography */
+  --font-serif: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+  --font-display: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+
+  /* Spacing */
+  --section-pad: 100px 0;
+  --container-max: 1280px;
+
+  /* Borders */
+  --border-gold: 1px solid rgba(201, 164, 61, 0.3);
+  --border-gold-solid: 1px solid #C9A43D;
+
+  /* Shadows */
+  --shadow-gold: 0 0 40px rgba(201, 164, 61, 0.15);
+  --shadow-card: 0 8px 40px rgba(0, 0, 0, 0.6);
+  --shadow-card-hover: 0 20px 60px rgba(201, 164, 61, 0.25);
+
+  /* Transitions */
+  --transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --transition-slow: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* ===================== RESET ===================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--font-sans);
+  font-weight: 300;
+  line-height: 1.7;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* =============== SCROLLBAR =============== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--dark-2); }
+::-webkit-scrollbar-thumb { background: var(--gold-mid); border-radius: 3px; }
+
+/* =============== SELECTION =============== */
+::selection { background: rgba(201, 164, 61, 0.35); color: var(--white); }
+
+/* =============== TYPOGRAPHY =============== */
+h1, h2, h3, h4, h5 {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: 0.02em;
+}
+
+p { font-family: var(--font-sans); }
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+img { display: block; max-width: 100%; }
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: var(--font-sans);
+}
+
+/* =============== CONTAINERS =============== */
+.container {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+@media (max-width: 768px) {
+  .container { padding: 0 20px; }
+}
+
+/* =============== GOLD TEXT =============== */
+.gold-text {
+  background: var(--gold-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* =============== SECTION LABEL =============== */
+.section-label {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold-mid);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.section-label::before,
+.section-label::after {
+  content: '';
+  display: inline-block;
+  width: 30px;
+  height: 1px;
+  background: var(--gold-gradient-h);
+}
+
+/* =============== DIVIDER =============== */
+.gold-divider {
+  width: 80px;
+  height: 2px;
+  background: var(--gold-gradient-h);
+  margin: 20px auto;
+}
+
+/* =============== BUTTONS =============== */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 36px;
+  background: var(--gold-gradient);
+  color: var(--black);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: var(--transition);
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+}
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--gold-shine);
+  background-size: 200% auto;
+  opacity: 0;
+  transition: var(--transition);
+}
+.btn-primary:hover::before { opacity: 1; background-position: right center; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(201, 164, 61, 0.4); }
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 34px;
+  background: transparent;
+  color: var(--gold-light);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: 1px solid rgba(201, 164, 61, 0.5);
+  cursor: pointer;
+  transition: var(--transition);
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+}
+.btn-outline:hover {
+  border-color: var(--gold-mid);
+  background: rgba(201, 164, 61, 0.08);
+  color: var(--gold-light);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(201, 164, 61, 0.2);
+}
+
+/* =============== GOLD BADGE =============== */
+.gold-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  background: var(--gold-gradient);
+  color: var(--black);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* =============== SECTION BASE =============== */
+.section { padding: 100px 0; position: relative; }
+.section-dark { background: var(--dark-1); }
+.section-darker { background: var(--dark-2); }
+
+/* =============== ANIMATIONS =============== */
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes goldPulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(201, 164, 61, 0.3); }
+  50% { box-shadow: 0 0 50px rgba(201, 164, 61, 0.6); }
+}
+
+@keyframes rotateSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-fade-up { animation: fadeInUp 0.8s ease forwards; }
+.animate-fade-in { animation: fadeIn 0.8s ease forwards; }
