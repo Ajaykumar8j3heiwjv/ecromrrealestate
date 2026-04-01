@@ -80,7 +80,7 @@ export default function PropertyCard({ property }) {
 
         <div className="property-card-footer">
           <Link to={`/listings/${id}`} className="btn-primary" id={`view-btn-${id}`}>View Details</Link>
-          <a href={`https://wa.me/${property.ownerPhone}?text=Hi, I am interested in ${title}`} target="_blank" rel="noreferrer" className="btn-outline" id={`contact-btn-${id}`}>WhatsApp</a>
+          <a href={`https://wa.me/9176088519?text=Hi, I am interested in ${title}`} target="_blank" rel="noreferrer" className="btn-outline" id={`contact-btn-${id}`}>WhatsApp</a>
         </div>
       </div>
     </div>
