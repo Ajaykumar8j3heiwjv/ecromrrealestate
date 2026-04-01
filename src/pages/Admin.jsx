@@ -257,7 +257,7 @@ const navItems = [
   { key: 'dashboard', label: 'Dashboard', icon: <svg viewBox="0 0 24 24" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="admin-nav-icon"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> },
   { key: 'properties', label: 'Properties', icon: <svg viewBox="0 0 24 24" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="admin-nav-icon"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> },
   { key: 'enquiries', label: 'Enquiries', icon: <svg viewBox="0 0 24 24" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="admin-nav-icon"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> },
-  { key: 'settings', label: 'Site Settings', icon: <svg viewBox="0 0 24 24" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="admin-nav-icon"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg> },
+  // { key: 'settings', label: 'Site Settings', icon: <svg viewBox="0 0 24 24" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="admin-nav-icon"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg> },
 ]
 
 export default function Admin() {
@@ -302,7 +302,77 @@ export default function Admin() {
       p.location.toLowerCase().includes(tableSearch.toLowerCase())
   )
 
+  const [isAuthenticated, setIsAuthenticated] = useState(() => localStorage.getItem('adminAuthenticated') === 'true')
+  const [loginForm, setLoginForm] = useState({ username: '', password: '' })
+  const [loginError, setLoginError] = useState('')
+
+  const ADMIN_USERNAME = 'Admin'
+  const ADMIN_PASSWORD = 'Admin@123'
+
+  const handleLoginChange = (e) => {
+    const { name, value } = e.target
+    setLoginForm((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleLoginSubmit = (e) => {
+    e.preventDefault()
+
+    if (loginForm.username.trim() === ADMIN_USERNAME && loginForm.password === ADMIN_PASSWORD) {
+      localStorage.setItem('adminAuthenticated', 'true')
+      setIsAuthenticated(true)
+      setLoginError('')
+      setLoginForm({ username: '', password: '' })
+      return
+    }
+
+    setLoginError('Invalid credentials. Username: Admin, Password: Admin123')
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem('adminAuthenticated')
+    setIsAuthenticated(false)
+    setActiveTab('dashboard')
+  }
+
   const tabTitle = { dashboard: 'Dashboard', properties: 'Property Management', enquiries: 'Enquiries', settings: 'Site Settings' }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="admin-login-page">
+        <div className="admin-login-card">
+          <h1>Admin Login</h1>
+          <p>Enter your credentials to continue.</p>
+          <form onSubmit={handleLoginSubmit} className="admin-login-form">
+            <label>
+              Username
+              <input
+                type="text"
+                name="username"
+                value={loginForm.username}
+                onChange={handleLoginChange}
+                placeholder="username"
+                required
+              />
+            </label>
+            <label>
+              Password
+              <input
+                type="password"
+                name="password"
+                value={loginForm.password}
+                onChange={handleLoginChange}
+                placeholder="password"
+                required
+              />
+            </label>
+            {loginError && <div className="admin-login-error">{loginError}</div>}
+            <button className="admin-btn-save" type="submit">Log In</button>
+            <p className="admin-login-note">Hint: username = Admin, password = Admin123</p>
+          </form>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="admin-wrap">
@@ -364,6 +434,7 @@ export default function Admin() {
                 Add Property
               </button>
             )}
+            <button className="admin-topbar-btn" onClick={handleLogout} style={{ marginRight: '8px', backgroundColor: '#cc4f4f' }}>Log out</button>
             <Link to="/" style={{ fontSize: '12px', color: 'var(--gold-mid)', letterSpacing: '0.1em', textDecoration: 'none' }}>← Back to Site</Link>
           </div>
         </div>
