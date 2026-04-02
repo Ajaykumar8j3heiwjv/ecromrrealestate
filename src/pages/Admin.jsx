@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import './Admin.css'
-import { getProperties, addProperty, updateProperty, deleteProperty } from '../data/propertyStore'
+import { getProperties, addProperty, updateProperty, deleteProperty, getEnquiries } from '../data/propertyStore'
 
 /* ====================== DATA ====================== */
 const emptyForm = { 
@@ -15,12 +15,6 @@ const emptyForm = {
   facing: '', propertyAge: '', parking: '', furnishedStatus: 'Fully Furnished',
   availableFrom: '', isFeatured: true, image: ''
 }
-
-const initialEnquiries = [
-  { id: 1, name: 'Aravind K.', phone: '9876543210', interest: 'Buy', property: 'Royal Crest Villa', date: '21 Mar 2025', status: 'New' },
-  { id: 2, name: 'Priya N.', phone: '9123456789', interest: 'Sell', property: 'Aurum Residences', date: '20 Mar 2025', status: 'Contacted' },
-  { id: 3, name: 'Suresh V.', phone: '9988776655', interest: 'Rent', property: 'Horizon Penthouse', date: '19 Mar 2025', status: 'Closed' },
-]
 
 /* ====================== ICONS ====================== */
 const Icon = ({ path, paths }) => (
@@ -263,7 +257,7 @@ const navItems = [
 export default function Admin() {
   const [activeTab, setActiveTab] = useState('dashboard')
   const [properties, setProperties] = useState([])
-  const [enquiries] = useState(initialEnquiries)
+  const [enquiries, setEnquiries] = useState([])
   const [modal, setModal] = useState(null)
   const [editTarget, setEditTarget] = useState(null)
   const [deleteTarget, setDeleteTarget] = useState(null)
@@ -271,6 +265,7 @@ export default function Admin() {
 
   useEffect(() => {
     setProperties(getProperties())
+    setEnquiries(getEnquiries())
   }, [])
 
   /* CRUD Handlers */

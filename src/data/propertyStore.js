@@ -5,6 +5,7 @@ import p3 from '../assets/property_3.png'
 import p4 from '../assets/property_4.png'
 
 const STORAGE_KEY = 'ecr_omr_properties'
+const ENQUIRIES_KEY = 'ecr_omr_enquiries'
 
 const defaultProperties = [
   {
@@ -142,6 +143,28 @@ export const addProperty = (property) => {
   const newProperty = { ...property, id: Date.now() }
   const updated = [newProperty, ...properties]
   saveProperties(updated)
+  return updated
+}
+
+export const getEnquiries = () => {
+  const stored = localStorage.getItem(ENQUIRIES_KEY)
+  if (stored) return JSON.parse(stored)
+
+  const defaultEnquiries = [
+    { id: 1, name: 'Aravind K.', phone: '9876543210', interest: 'Buy', property: 'Royal Crest Villa', date: '21 Mar 2025', status: 'New' },
+    { id: 2, name: 'Priya N.', phone: '9123456789', interest: 'Sell', property: 'Aurum Residences', date: '20 Mar 2025', status: 'Contacted' },
+    { id: 3, name: 'Suresh V.', phone: '9988776655', interest: 'Rent', property: 'Horizon Penthouse', date: '19 Mar 2025', status: 'Closed' },
+  ]
+
+  localStorage.setItem(ENQUIRIES_KEY, JSON.stringify(defaultEnquiries))
+  return defaultEnquiries
+}
+
+export const addEnquiry = (enquiry) => {
+  const enquiries = getEnquiries()
+  const newEnquiry = { ...enquiry, id: Date.now(), date: new Date().toLocaleDateString('en-GB'), status: 'New' }
+  const updated = [newEnquiry, ...enquiries]
+  localStorage.setItem(ENQUIRIES_KEY, JSON.stringify(updated))
   return updated
 }
 

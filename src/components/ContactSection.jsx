@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import './ContactSection.css'
+import { addEnquiry } from '../data/propertyStore'
 
 const PhoneIcon = () => (
   <svg viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
@@ -23,7 +24,37 @@ export default function ContactSection() {
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
 
-  const handleSubmit = () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+
+    // persist into admin enquiry store
+    addEnquiry({
+      name: form.name,
+      phone: form.phone,
+      email: form.email,
+      interest: form.interest,
+      message: form.message,
+      property: form.interest || 'General',
+    })
+
+    // try sending email through Formcarry (for inbox notification)
+    try {
+      const payload = new FormData()
+      payload.append('name', form.name)
+      payload.append('phone', form.phone)
+      payload.append('email', form.email)
+      payload.append('interest', form.interest)
+      payload.append('message', form.message)
+      payload.append('_next', 'http://localhost:5173')
+
+      await fetch('https://formcarry.com/s/27X4AL2MI5l', {
+        method: 'POST',
+        body: payload,
+      })
+    } catch (error) {
+      console.warn('Formcarry email delivery failed (still saved locally):', error)
+    }
+
     setSent(true)
     setTimeout(() => {
       setSent(false)
@@ -78,7 +109,7 @@ export default function ContactSection() {
                 <p style={{ color: 'var(--text-muted)', marginTop: '8px' }}>Our team will reach out within 24 hours.</p>
               </div>
             ) : (
-              <form id="contact-form" action="https://formcarry.com/s/27X4AL2MI5l" method="POST">
+              <form id="contact-form" onSubmit={handleSubmit}>
                 {/* FormSubmit Configuration */}
                 <input type="hidden" name="_next" value="http://localhost:5173" />
 
