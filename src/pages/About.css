@@ -1,0 +1,14 @@
+.about-page { background: #0A0A0A; color: #FFFFFF; font-family: var(--font-sans); }
+.about-hero { padding: 80px 0; background: linear-gradient(135deg, #111111 0%, #0a0a0a 100%); text-align: center; }
+.about-hero .container { max-width: 900px; margin: 0 auto; }
+.about-hero h1 { font-family: var(--font-serif); font-size: 42px; margin-bottom: 12px; color: var(--gold-light); }
+.about-hero p { font-size: 18px; color: #ccc; line-height: 1.6; }
+.about-values { padding: 60px 0; }
+.about-values h2 { font-family: var(--font-serif); font-size: 32px; margin-bottom: 24px; }
+.about-values-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap: 18px; }
+.about-values-grid article { background: #111; border: 1px solid rgba(201,164,61,0.2); border-radius: 12px; padding: 20px; }
+.about-values-grid h3 { margin: 0 0 8px; font-size: 18px; color: var(--gold-light); }
+.about-values-grid p { color: #ddd; font-size: 14px; line-height: 1.5; }
+.about-team { padding: 60px 0; }
+.about-team h2 { font-family: var(--font-serif); font-size: 32px; margin-bottom: 14px; }
+.about-team p { color: #ccc; margin-bottom: 24px; max-width: 650px; }

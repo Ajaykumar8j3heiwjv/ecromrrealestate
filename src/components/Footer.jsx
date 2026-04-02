@@ -42,11 +42,21 @@ export default function Footer() {
           <div>
             <h4 className="footer-col-title">Quick Links</h4>
             <ul className="footer-links">
-              {quickLinks.map((l) => (
-                <li key={l}>
-                  <Link to="/listings">{l}</Link>
-                </li>
-              ))}
+              {quickLinks.map((l) => {
+                const routeMap = {
+                  'Buy Property': '/listings?type=buy',
+                  'Rent Property': '/listings?type=rent',
+                  'Sell Property': '/listings?type=sell',
+                  'New Projects': '/listings?type=projects',
+                  'About Us': '/about',
+                  'Contact Us': '/#contact',
+                }
+                return (
+                  <li key={l}>
+                    <Link to={routeMap[l] || '/listings'}>{l}</Link>
+                  </li>
+                )
+              })}
             </ul>
           </div>
 
@@ -56,7 +66,7 @@ export default function Footer() {
             <ul className="footer-links">
               {areas.map((a) => (
                 <li key={a}>
-                  <a href="#">{a}</a>
+                  <Link to={`/listings?location=${encodeURIComponent(a)}`}>{a}</Link>
                 </li>
               ))}
             </ul>
@@ -81,9 +91,9 @@ export default function Footer() {
             © 2025 <span>ECR OMR Real Estates</span>. All rights reserved.
           </p>
           <ul className="footer-bottom-links">
-            <li><a href="#">Privacy Policy</a></li>
-            <li><a href="#">Terms of Service</a></li>
-            <li><a href="#">Disclaimer</a></li>
+            <li><Link to="/privacy">Privacy Policy</Link></li>
+            <li><Link to="/terms">Terms of Service</Link></li>
+            <li><Link to="/disclaimer">Disclaimer</Link></li>
           </ul>
         </div>
       </div>

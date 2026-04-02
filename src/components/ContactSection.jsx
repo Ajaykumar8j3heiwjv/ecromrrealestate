@@ -107,7 +107,7 @@ export default function ContactSection() {
                 <div className="contact-info-icon"><PhoneIcon /></div>
                 <div>
                   <div className="contact-info-label">Phone</div>
-                  <div className="contact-info-value">+91 91760 88519</div>
+                  <div className="contact-info-value">+91 89396 64747</div>
                 </div>
               </div>
               <div className="contact-info-item">
