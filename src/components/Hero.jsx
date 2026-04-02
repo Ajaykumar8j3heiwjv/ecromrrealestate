@@ -8,6 +8,9 @@ const locations = ['All Locations', 'ECR Road', 'OMR Road', 'Sholinganallur', 'P
 
 export default function Hero() {
   const [activeTab, setActiveTab] = useState('Buy')
+  const [selectedLocation, setSelectedLocation] = useState('All Locations')
+  const [selectedType, setSelectedType] = useState('All Types')
+  const [budget, setBudget] = useState('')
   const [bgLoaded, setBgLoaded] = useState(false)
 
   useEffect(() => {
@@ -16,6 +19,16 @@ export default function Hero() {
     img.onload = () => setBgLoaded(true)
     setTimeout(() => setBgLoaded(true), 100)
   }, [])
+
+  const statusFilter = activeTab === 'Rent' ? 'Rent' : 'Sale'
+  const buildSearchUrl = () => {
+    const params = new URLSearchParams()
+    if (statusFilter) params.set('status', statusFilter)
+    if (selectedType && selectedType !== 'All Types') params.set('type', selectedType)
+    if (selectedLocation && selectedLocation !== 'All Locations') params.set('location', selectedLocation)
+    if (budget.trim()) params.set('budget', budget.trim())
+    return `/listings?${params.toString()}`
+  }
 
   return (
     <section className="hero" id="hero">
@@ -68,21 +81,27 @@ export default function Hero() {
           <div className="hero-search-body">
             <div className="hero-search-field">
               <label>Location</label>
-              <select defaultValue="All Locations" id="search-location">
+              <select value={selectedLocation} onChange={(e) => setSelectedLocation(e.target.value)} id="search-location">
                 {locations.map((l) => <option key={l}>{l}</option>)}
               </select>
             </div>
             <div className="hero-search-field">
               <label>Property Type</label>
-              <select defaultValue="All Types" id="search-type">
+              <select value={selectedType} onChange={(e) => setSelectedType(e.target.value)} id="search-type">
                 {propertyTypes.map((t) => <option key={t}>{t}</option>)}
               </select>
             </div>
             <div className="hero-search-field">
               <label>Budget</label>
-              <input type="text" placeholder="e.g. ₹50L – ₹2Cr" id="search-budget" />
+              <input
+                type="text"
+                placeholder="e.g. ₹50L – ₹2Cr"
+                id="search-budget"
+                value={budget}
+                onChange={(e) => setBudget(e.target.value)}
+              />
             </div>
-            <Link to="/listings" className="hero-search-btn" id="hero-search-submit">
+            <Link to={buildSearchUrl()} className="hero-search-btn" id="hero-search-submit">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
               </svg>

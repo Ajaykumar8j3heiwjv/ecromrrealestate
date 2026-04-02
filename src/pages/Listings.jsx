@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import './Listings.css'
 import { getProperties } from '../data/propertyStore'
 
@@ -10,17 +10,63 @@ export default function Listings() {
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
+  const [locationFilter, setLocationFilter] = useState('')
+  const [budgetMin, setBudgetMin] = useState('')
+  const [budgetMax, setBudgetMax] = useState('')
   const [sortBy, setSortBy] = useState('default')
+  const [searchParams] = useSearchParams()
 
   useEffect(() => {
     setAllListings(getProperties())
   }, [])
 
+  useEffect(() => {
+    const rawStatus = searchParams.get('status') || ''
+    const rawType = searchParams.get('type') || ''
+    const location = searchParams.get('location') || ''
+    const budget = searchParams.get('budget') || ''
+
+    // Interpret generic nav-based query values:
+    // - ?type=rent  => status = Rent
+    // - ?type=buy   => status = Sale
+    // - ?type=sell  => status = Sale
+    const normalizedType = rawType.trim().toLowerCase()
+    let computedStatus = rawStatus
+
+    if (!computedStatus && normalizedType) {
+      if (normalizedType === 'rent') computedStatus = 'Rent'
+      else if (normalizedType === 'buy' || normalizedType === 'sell') computedStatus = 'Sale'
+      else if (normalizedType === 'new') computedStatus = 'New'
+    }
+
+    setStatusFilter(computedStatus)
+
+    // If type is property category (Apartment/Villa/Penthouse), use as typeFilter
+    if (normalizedType && !['rent', 'buy', 'sell', 'new'].includes(normalizedType)) {
+      setTypeFilter(rawType)
+    } else {
+      setTypeFilter('')
+    }
+
+    setLocationFilter(location)
+
+    if (budget) {
+      const digits = budget.replace(/[^0-9]/g, ' ').trim().split(/\s+/)
+      setBudgetMin(digits[0] || '')
+      setBudgetMax(digits[1] || '')
+    }
+  }, [searchParams])
+
   const filtered = allListings.filter((p) => {
     const matchSearch = p.title.toLowerCase().includes(search.toLowerCase()) || p.location.toLowerCase().includes(search.toLowerCase())
     const matchType = !typeFilter || p.type === typeFilter
     const matchStatus = !statusFilter || p.status === statusFilter
-    return matchSearch && matchType && matchStatus
+    const matchLocation = !locationFilter || locationFilter === 'All Areas' || p.location === locationFilter
+    const price = Number(p.price.toString().replace(/[^0-9]/g, '')) || 0
+    const minBudget = Number(budgetMin.toString().replace(/[^0-9]/g, '')) || 0
+    const maxBudget = Number(budgetMax.toString().replace(/[^0-9]/g, '')) || 0
+    const matchBudget = (!budgetMin && !budgetMax) || (minBudget && price >= minBudget) || (maxBudget && price <= maxBudget) || (minBudget && maxBudget && price >= minBudget && price <= maxBudget)
+    return matchSearch && matchType && matchStatus && matchLocation && matchBudget
   })
 
   return (
@@ -137,7 +183,7 @@ export default function Listings() {
                 <h3 className="sidebar-title">Refine Search</h3>
                 <div className="sidebar-group">
                   <label className="sidebar-label">Location</label>
-                  <select id="sidebar-location">
+                  <select id="sidebar-location" value={locationFilter} onChange={(e) => setLocationFilter(e.target.value)}>
                     <option>All Areas</option>
                     <option>ECR Road</option>
                     <option>OMR Road</option>
@@ -149,11 +195,11 @@ export default function Listings() {
                 </div>
                 <div className="sidebar-group">
                   <label className="sidebar-label">Budget (Min)</label>
-                  <input id="sidebar-budget-min" type="text" placeholder="e.g. ₹50 Lakhs" />
+                  <input value={budgetMin} onChange={(e) => setBudgetMin(e.target.value)} id="sidebar-budget-min" type="text" placeholder="e.g. 50" />
                 </div>
                 <div className="sidebar-group">
                   <label className="sidebar-label">Budget (Max)</label>
-                  <input id="sidebar-budget-max" type="text" placeholder="e.g. ₹2 Crores" />
+                  <input value={budgetMax} onChange={(e) => setBudgetMax(e.target.value)} id="sidebar-budget-max" type="text" placeholder="e.g. 200" />
                 </div>
                 <div className="sidebar-group">
                   <label className="sidebar-label">Bedrooms</label>
