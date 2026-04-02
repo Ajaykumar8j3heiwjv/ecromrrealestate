@@ -21,13 +21,14 @@ const MapIcon = () => (
 export default function ContactSection() {
   const [form, setForm] = useState({ name: '', phone: '', email: '', interest: '', message: '' })
   const [sent, setSent] = useState(false)
+  const [feedback, setFeedback] = useState('')
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
 
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    // persist into admin enquiry store
+    // save admin enquiry
     addEnquiry({
       name: form.name,
       phone: form.phone,
@@ -37,28 +38,54 @@ export default function ContactSection() {
       property: form.interest || 'General',
     })
 
-    // try sending email through Formcarry (for inbox notification)
+    // 1) primary: send through serverless SMTP endpoint (your own email)
     try {
-      const payload = new FormData()
-      payload.append('name', form.name)
-      payload.append('phone', form.phone)
-      payload.append('email', form.email)
-      payload.append('interest', form.interest)
-      payload.append('message', form.message)
-      payload.append('_next', 'http://localhost:5173')
-
-      await fetch('https://formcarry.com/s/27X4AL2MI5l', {
+      const response = await fetch('/api/contact', {
         method: 'POST',
-        body: payload,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: form.name,
+          phone: form.phone,
+          email: form.email,
+          interest: form.interest,
+          message: form.message,
+        }),
       })
+
+      if (!response.ok) {
+        throw new Error('SMTP API failed: ' + (await response.text()))
+      }
+      setFeedback('Message sent via SMTP and saved to enquires.')
     } catch (error) {
-      console.warn('Formcarry email delivery failed (still saved locally):', error)
+      console.warn('SMTP send failed, falling back to Formcarry (still saved locally):', error)
+      setFeedback('Saved to enquires. Mail send failed, using Formcarry fallback.')
+
+      // fallback to Formcarry for mail delivery
+      try {
+        const payload = new FormData()
+        payload.append('name', form.name)
+        payload.append('phone', form.phone)
+        payload.append('email', form.email)
+        payload.append('interest', form.interest)
+        payload.append('message', form.message)
+        payload.append('_next', 'http://localhost:5173')
+
+        await fetch('https://formcarry.com/s/27X4AL2MI5l', {
+          method: 'POST',
+          body: payload,
+        })
+        setFeedback('Saved to enquires and delivered via Formcarry fallback.')
+      } catch (fallbackError) {
+        console.error('Formcarry fallback failed too', fallbackError)
+        setFeedback('Saved to enquires, but email delivery failed.')
+      }
     }
 
     setSent(true)
     setTimeout(() => {
       setSent(false)
       setForm({ name: '', phone: '', email: '', interest: '', message: '' })
+      setFeedback('')
     }, 4000)
   }
 
@@ -102,6 +129,9 @@ export default function ContactSection() {
 
           <div className="contact-form">
             <h3 className="contact-form-title">Request a Free Consultation</h3>
+            {feedback && !sent && (
+              <div style={{ marginBottom: '12px', color: '#f9d57b', fontSize: '14px' }}>{feedback}</div>
+            )}
             {sent ? (
               <div style={{ textAlign: 'center', padding: '40px 0' }}>
                 <div style={{ fontSize: '48px', marginBottom: '16px' }}>✓</div>

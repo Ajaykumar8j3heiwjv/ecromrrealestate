@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import './Admin.css'
-import { getProperties, addProperty, updateProperty, deleteProperty, getEnquiries } from '../data/propertyStore'
+import { getProperties, addProperty, updateProperty, deleteProperty, getEnquiries, updateEnquiry, deleteEnquiry } from '../data/propertyStore'
 
 /* ====================== DATA ====================== */
 const emptyForm = { 
@@ -291,6 +291,16 @@ export default function Admin() {
     setDeleteTarget(null)
   }
 
+  const handleEnquiryDelete = (id) => {
+    const updated = deleteEnquiry(id)
+    setEnquiries(updated)
+  }
+
+  const handleMarkContacted = (enquiry) => {
+    const updated = updateEnquiry({ ...enquiry, status: 'Contacted' })
+    setEnquiries(updated)
+  }
+
   const filteredProps = properties.filter(
     (p) =>
       p.title.toLowerCase().includes(tableSearch.toLowerCase()) ||
@@ -392,7 +402,7 @@ export default function Admin() {
                 {item.icon}
                 {item.label}
                 {item.key === 'properties' && properties.length > 0 && <span className="admin-nav-badge">{properties.length}</span>}
-                {item.key === 'enquiries' && <span className="admin-nav-badge">3</span>}
+                {item.key === 'enquiries' && enquiries.length > 0 && <span className="admin-nav-badge">{enquiries.length}</span>}
               </button>
             ))}
           </div>
@@ -616,10 +626,10 @@ export default function Admin() {
                         </td>
                         <td>
                           <div className="admin-action-btns">
-                            <button className="action-btn edit" title="Mark Contacted">
+                            <button className="action-btn edit" title="Mark Contacted" onClick={() => handleMarkContacted(e)}>
                               <svg viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.72 12"/></svg>
                             </button>
-                            <button className="action-btn delete" title="Delete enquiry">
+                            <button className="action-btn delete" title="Delete enquiry" onClick={() => handleEnquiryDelete(e.id)}>
                               <svg viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
                             </button>
                           </div>

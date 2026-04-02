@@ -168,6 +168,20 @@ export const addEnquiry = (enquiry) => {
   return updated
 }
 
+export const updateEnquiry = (updatedEnquiry) => {
+  const enquiries = getEnquiries()
+  const updated = enquiries.map((e) => (e.id === updatedEnquiry.id ? updatedEnquiry : e))
+  localStorage.setItem(ENQUIRIES_KEY, JSON.stringify(updated))
+  return updated
+}
+
+export const deleteEnquiry = (id) => {
+  const enquiries = getEnquiries()
+  const updated = enquiries.filter((e) => e.id !== id)
+  localStorage.setItem(ENQUIRIES_KEY, JSON.stringify(updated))
+  return updated
+}
+
 export const updateProperty = (updatedProp) => {
   const properties = getProperties()
   const updated = properties.map(p => p.id === updatedProp.id ? updatedProp : p)
