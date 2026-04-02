@@ -8,8 +8,13 @@ export default function About() {
         <div className="container">
           <h1>About ECR OMR Real Estates</h1>
           <p>
-            We are Chennai's premier luxury real estate marketplace, specializing in ECR and OMR properties. 
-            With over 15 years of experience, we deliver trusted advisory, end-to-end transactions, and a curated portfolio.
+            We are Chennai’s trusted luxury real estate experts, specializing in the high-growth ECR and OMR corridors.
+            With 15+ years of proven track record, we connect buyers, renters, and sellers with premium curated listings and
+            end-to-end transaction support.
+          </p>
+          <p style={{ marginTop: '18px', fontSize: '16px', color: '#d0c8b1' }}>
+            Our mission is to make every property move safe, transparent, and success-driven—powered by local expertise,
+            verified inventory, and personalised client service.
           </p>
         </div>
       </section>
@@ -34,7 +39,21 @@ export default function About() {
 
       <section className="about-team container">
         <h2>Meet the Team</h2>
-        <p>Our experts are from top brokerage backgrounds with deep presence in Chennai markets. We are ready to assist you at every step.</p>
+        <p>Our team combines strong local insight with premium global best practices to deliver quick, profitable deals and satisfied clients.</p>
+        <div className="about-team-grid">
+          <article>
+            <h4>Ravi Kumar</h4>
+            <p>Founder & CEO — 18 years in Chennai residential & commercial markets.</p>
+          </article>
+          <article>
+            <h4>Meena Krishnan</h4>
+            <p>Head of Sales — property vetting, investor relations, and portfolio advisory.</p>
+          </article>
+          <article>
+            <h4>Arun Prakash</h4>
+            <p>Operations Lead — contracts, due diligence & client happiness.</p>
+          </article>
+        </div>
         <Link to="/" className="btn-primary">Back to Home</Link>
       </section>
     </main>

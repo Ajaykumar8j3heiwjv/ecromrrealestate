@@ -6,6 +6,21 @@ const quickLinks = ['Buy Property', 'Rent Property', 'Sell Property', 'New Proje
 const areas = ['ECR Road', 'OMR Road', 'Sholinganallur', 'Perungudi', 'Thoraipakkam', 'Siruseri', 'Padur', 'Besant Nagar']
 
 export default function Footer() {
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
+  }
+
+  const handleLinkClick = (target) => {
+    if (target === 'contact') {
+      const targetElement = document.getElementById('contact')
+      if (targetElement) {
+        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        return
+      }
+    }
+    scrollToTop()
+  }
+
   return (
     <footer className="footer">
       <div className="container">
@@ -51,9 +66,15 @@ export default function Footer() {
                   'About Us': '/about',
                   'Contact Us': '/#contact',
                 }
+                const route = routeMap[l] || '/listings'
                 return (
                   <li key={l}>
-                    <Link to={routeMap[l] || '/listings'}>{l}</Link>
+                    <Link
+                      to={route}
+                      onClick={() => handleLinkClick(l === 'Contact Us' ? 'contact' : null)}
+                    >
+                      {l}
+                    </Link>
                   </li>
                 )
               })}
@@ -91,9 +112,21 @@ export default function Footer() {
             © 2025 <span>ECR OMR Real Estates</span>. All rights reserved.
           </p>
           <ul className="footer-bottom-links">
-            <li><Link to="/privacy">Privacy Policy</Link></li>
-            <li><Link to="/terms">Terms of Service</Link></li>
-            <li><Link to="/disclaimer">Disclaimer</Link></li>
+            <li>
+              <Link to="/privacy" onClick={scrollToTop}>
+                Privacy Policy
+              </Link>
+            </li>
+            <li>
+              <Link to="/terms" onClick={scrollToTop}>
+                Terms of Service
+              </Link>
+            </li>
+            <li>
+              <Link to="/disclaimer" onClick={scrollToTop}>
+                Disclaimer
+              </Link>
+            </li>
           </ul>
         </div>
       </div>

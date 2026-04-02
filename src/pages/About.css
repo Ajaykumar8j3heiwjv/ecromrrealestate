@@ -12,3 +12,8 @@
 .about-team { padding: 60px 0; }
 .about-team h2 { font-family: var(--font-serif); font-size: 32px; margin-bottom: 14px; }
 .about-team p { color: #ccc; margin-bottom: 24px; max-width: 650px; }
+.about-team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 26px; }
+.about-team-grid article { background: #111; border: 1px solid rgba(201,164,61,0.2); border-radius: 10px; padding: 20px; }
+.about-team-grid h4 { margin: 0 0 8px; font-size: 18px; color: var(--gold-light); }
+.about-team-grid p { color: #ccc; font-size: 14px; line-height: 1.5; }
+
