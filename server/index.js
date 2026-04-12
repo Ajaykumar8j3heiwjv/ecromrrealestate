@@ -14,7 +14,7 @@ const supabase = createClient(
 
 /* ── Middleware ── */
 app.use(cors({ origin: '*' }))
-app.use(express.json({ limit: '10mb' })) // allow base64 images
+app.use(express.json({ limit: '50mb' })) // allow base64 images (multiple photos)
 
 /* ═══════════════════════════════════════════════
    PROPERTIES
@@ -33,30 +33,48 @@ app.get('/properties', async (req, res) => {
 
 // POST create property
 app.post('/properties', async (req, res) => {
-  const body = snakifyProperty(req.body)
-  const { data, error } = await supabase
-    .from('properties')
-    .insert([body])
-    .select()
-    .single()
+  try {
+    const body = snakifyProperty(req.body)
+    console.log('POST /properties — inserting:', JSON.stringify(Object.keys(body)))
+    const { data, error } = await supabase
+      .from('properties')
+      .insert([body])
+      .select()
+      .single()
 
-  if (error) return res.status(500).json({ error: error.message })
-  res.status(201).json(camelize(data))
+    if (error) {
+      console.error('Supabase insert error:', error.message, error.details, error.hint)
+      return res.status(500).json({ error: error.message, details: error.details, hint: error.hint })
+    }
+    res.status(201).json(camelize(data))
+  } catch (err) {
+    console.error('Unexpected POST /properties error:', err)
+    res.status(500).json({ error: err.message })
+  }
 })
 
 // PATCH update property
 app.patch('/properties/:id', async (req, res) => {
-  const id = Number(req.params.id)
-  const body = snakifyProperty(req.body)
-  const { data, error } = await supabase
-    .from('properties')
-    .update(body)
-    .eq('id', id)
-    .select()
-    .single()
+  try {
+    const id = Number(req.params.id)
+    const body = snakifyProperty(req.body)
+    console.log('PATCH /properties/:id —', id, 'keys:', JSON.stringify(Object.keys(body)))
+    const { data, error } = await supabase
+      .from('properties')
+      .update(body)
+      .eq('id', id)
+      .select()
+      .single()
 
-  if (error) return res.status(500).json({ error: error.message })
-  res.json(camelize(data))
+    if (error) {
+      console.error('Supabase update error:', error.message, error.details, error.hint)
+      return res.status(500).json({ error: error.message, details: error.details, hint: error.hint })
+    }
+    res.json(camelize(data))
+  } catch (err) {
+    console.error('Unexpected PATCH /properties error:', err)
+    res.status(500).json({ error: err.message })
+  }
 })
 
 // DELETE property
