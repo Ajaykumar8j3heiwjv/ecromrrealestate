@@ -104,10 +104,10 @@ export default function ContactSection() {
             </p>
             <div className="contact-info-list">
               <div className="contact-info-item">
-                <div className="contact-info-icon" style={{ margin: '20px 10px 0 0' }}><PhoneIcon /></div>
+                <div className="contact-info-icon" style={{ margin: '35px 0 0 0' }}><PhoneIcon /></div>
                 <div>
                   <div className="contact-info-label">Phone</div>
-                  <div className="contact-info-value">+91 89 39 66 4747<br />+91 89 39 11 47 47 </div>
+                  <div className="contact-info-value">+91 89 39 66 47 47<br />+91 89 39 11 47 47 <br/>+91 89 39 47 47 47</div>
                 </div>
               </div>
               <div className="contact-info-item">

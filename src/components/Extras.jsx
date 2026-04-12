@@ -13,8 +13,8 @@ const allItems = [...marqueeItems, ...marqueeItems]
 
 const stats = [
   { num: '500+', label: 'Properties Sold' },
-  { num: '1,200+', label: 'Happy Clients' },
-  { num: '15+', label: 'Years in Business' },
+  { num: '1,000+', label: 'Happy Clients' },
+  { num: '20+', label: 'Years in Business' },
   { num: '₹500Cr+', label: 'Total Portfolio' },
 ]
 

@@ -26,7 +26,7 @@ const allListingsDefault = [
     desc: 'Fully furnished and gated apartment in prime location is for rent in prime location, just opposite to Tata Communications. Apartment can be rent out fully or semi-furnished upon agreement. Few minutes away from branded showrooms and other shops. Rent negotiable.',
     owner: {
       name: 'Rajkumar B Thangamanian',
-      role: 'Owner',
+      role: 'Agent',
       phone: '+91-98404 22285'
     },
     details: [
@@ -41,11 +41,11 @@ const allListingsDefault = [
       { label: 'Balconies', val: '2', icon: '🌅' },
       { label: 'Property on Floor', val: '8', icon: '🏢' },
       { label: 'Total Floor(s)', val: '14', icon: '🏘️' },
-      { label: 'Suitable Time To Call', val: '4-5pm', icon: '⏰' },
+      // { label: 'Suitable Time To Call', val: '4-5pm', icon: '⏰' },
       { label: 'Servant Accommodation', val: 'No', icon: '🙋' },
-      { label: 'Pet Allowed', val: 'Yes', icon: '🐾' },
-      { label: 'Food Preference', val: 'Veg & Non-Veg', icon: '🍲' },
-      { label: 'Tenants', val: 'Both (Family / Bachelor)', icon: '👨‍👩‍👧‍👦' },
+      // { label: 'Pet Allowed', val: 'Yes', icon: '🐾' },
+      // { label: 'Food Preference', val: 'Veg & Non-Veg', icon: '🍲' },
+      // { label: 'Tenants', val: 'Both (Family / Bachelor)', icon: '👨‍👩‍👧‍👦' },
       { label: 'Facing', val: 'North West', icon: '🧭' },
       { label: 'Age Of The Property', val: '1-5 years', icon: '🏗️' },
       { label: 'Parking', val: 'Both (Two/Four Wheeler)', icon: '🚗' },
@@ -110,11 +110,11 @@ export default function PropertyDetail() {
           { label: 'Balconies', val: found.balconies, icon: '🌅' },
           { label: 'Property on Floor', val: found.propertyOnFloor, icon: '🏢' },
           { label: 'Total Floor(s)', val: found.totalFloors, icon: '🏘️' },
-          { label: 'Suitable Time To Call', val: found.suitableTime, icon: '⏰' },
+          // { label: 'Suitable Time To Call', val: found.suitableTime, icon: '⏰' },
           { label: 'Servant Accommodation', val: found.servantAcc, icon: '🙋' },
-          { label: 'Pet Allowed', val: found.petAllowed, icon: '🐾' },
-          { label: 'Food Preference', val: found.foodPref, icon: '🍲' },
-          { label: 'Tenants', val: found.tenants, icon: '👨‍👩‍👧‍👦' },
+          // { label: 'Pet Allowed', val: found.petAllowed, icon: '🐾' },
+          // { label: 'Food Preference', val: found.foodPref, icon: '🍲' },
+          // { label: 'Tenants', val: found.tenants, icon: '👨‍👩‍👧‍👦' },
           { label: 'Facing', val: found.facing, icon: '🧭' },
           { label: 'Age Of The Property', val: found.propertyAge, icon: '🏗️' },
           { label: 'Parking', val: found.parking, icon: '🚗' },
@@ -224,7 +224,7 @@ export default function PropertyDetail() {
           {/* Sidebar */}
           <aside className="detail-sidebar-v2">
             <div className="contact-owner-card">
-              <h4 className="card-top-label">Contact Owner</h4>
+              <h4 className="card-top-label">Contact Agent</h4>
               <div className="owner-profile">
                 <div className="owner-avatar">{property.ownerName?.charAt(0)}</div>
                 <div className="owner-info">
@@ -240,7 +240,7 @@ export default function PropertyDetail() {
                 className="contact-owner-btn"
                 style={{ display: 'block', textAlign: 'center', textDecoration: 'none' }}
               >
-                WHATSAPP OWNER NOW
+                WHATSAPP AGENT NOW
               </a>
             </div>
 
