@@ -24,10 +24,19 @@ const Icon = ({ path, paths }) => (
   </svg>
 )
 
+/* ====================== SPINNER ====================== */
+const Spinner = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+    strokeLinecap="round" style={{ animation: 'spin 0.8s linear infinite', verticalAlign: 'middle', marginRight: '6px' }}>
+    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+  </svg>
+)
+
 /* ====================== MODAL ====================== */
 function PropertyModal({ mode, data, onSave, onClose }) {
   const [form, setForm] = useState(data || emptyForm)
   const [images, setImages] = useState(Array.isArray(data?.images) ? data.images : (data?.image ? [data.image] : []))
+  const [saving, setSaving] = useState(false)
   
   const handle = (e) => setForm({ ...form, [e.target.name]: e.target.value })
   
@@ -46,10 +55,14 @@ function PropertyModal({ mode, data, onSave, onClose }) {
     setImages(prev => prev.filter((_, i) => i !== idx))
   }
   
-  const handleSave = () => {
-    // Include images in form data
-    const dataToSave = { ...form, images: images.length > 0 ? images : (form.image || null) }
-    onSave(dataToSave)
+  const handleSave = async () => {
+    setSaving(true)
+    try {
+      const dataToSave = { ...form, images: images.length > 0 ? images : (form.image || null) }
+      await onSave(dataToSave)
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -178,9 +191,10 @@ function PropertyModal({ mode, data, onSave, onClose }) {
           </div>
         </div>
         <div className="admin-modal-footer">
-          <button className="admin-btn-cancel" onClick={onClose}>Cancel</button>
-          <button className="admin-btn-save" onClick={handleSave}>
-            {mode === 'add' ? 'Add Property' : 'Save Changes'}
+          <button className="admin-btn-cancel" onClick={onClose} disabled={saving}>Cancel</button>
+          <button className="admin-btn-save" onClick={handleSave} disabled={saving}>
+            {saving && <Spinner />}
+            {saving ? (mode === 'add' ? 'Adding…' : 'Saving…') : (mode === 'add' ? 'Add Property' : 'Save Changes')}
           </button>
         </div>
       </div>
@@ -190,6 +204,13 @@ function PropertyModal({ mode, data, onSave, onClose }) {
 
 /* ====================== DELETE MODAL ====================== */
 function DeleteModal({ item, onConfirm, onClose }) {
+  const [deleting, setDeleting] = useState(false)
+
+  const handleConfirm = async () => {
+    setDeleting(true)
+    try { await onConfirm() } finally { setDeleting(false) }
+  }
+
   return (
     <div className="admin-modal-bg" onClick={onClose}>
       <div className="admin-modal admin-delete-modal" onClick={(e) => e.stopPropagation()}>
@@ -210,8 +231,11 @@ function DeleteModal({ item, onConfirm, onClose }) {
           </p>
         </div>
         <div className="admin-modal-footer">
-          <button className="admin-btn-cancel" onClick={onClose}>Cancel</button>
-          <button className="admin-btn-delete" id="confirm-delete-btn" onClick={onConfirm}>Yes, Delete</button>
+          <button className="admin-btn-cancel" onClick={onClose} disabled={deleting}>Cancel</button>
+          <button className="admin-btn-delete" id="confirm-delete-btn" onClick={handleConfirm} disabled={deleting}>
+            {deleting && <Spinner />}
+            {deleting ? 'Deleting…' : 'Yes, Delete'}
+          </button>
         </div>
       </div>
     </div>
@@ -322,6 +346,7 @@ export default function Admin() {
       setModal(null)
     } catch (err) {
       console.error('Add property error:', err)
+      alert(`Failed to add property:\n${err.message}`)
     }
   }
 
@@ -334,6 +359,7 @@ export default function Admin() {
       setEditTarget(null)
     } catch (err) {
       console.error('Edit property error:', err)
+      alert(`Failed to save changes:\n${err.message}`)
     }
   }
 
@@ -348,26 +374,35 @@ export default function Admin() {
       setDeleteTarget(null)
     } catch (err) {
       console.error('Delete property error:', err)
+      alert(`Failed to delete:\n${err.message}`)
     }
   }
 
+  const [enquiryBusy, setEnquiryBusy] = useState({})
+
   const handleEnquiryDelete = async (id) => {
+    setEnquiryBusy(prev => ({ ...prev, [`del-${id}`]: true }))
     try {
       await deleteEnquiry(id)
       const updated = await getEnquiries()
       setEnquiries(updated)
     } catch (err) {
       console.error('Delete enquiry error:', err)
+    } finally {
+      setEnquiryBusy(prev => ({ ...prev, [`del-${id}`]: false }))
     }
   }
 
   const handleMarkContacted = async (enquiry) => {
+    setEnquiryBusy(prev => ({ ...prev, [`contact-${enquiry.id}`]: true }))
     try {
       await updateEnquiry({ ...enquiry, status: 'Contacted' })
       const updated = await getEnquiries()
       setEnquiries(updated)
     } catch (err) {
       console.error('Update enquiry error:', err)
+    } finally {
+      setEnquiryBusy(prev => ({ ...prev, [`contact-${enquiry.id}`]: false }))
     }
   }
 
@@ -384,6 +419,8 @@ export default function Admin() {
   const ADMIN_USERNAME = 'Admin'
   const ADMIN_PASSWORD = 'Admin@123'
 
+  const [loginBusy, setLoginBusy] = useState(false)
+
   const handleLoginChange = (e) => {
     const { name, value } = e.target
     setLoginForm((prev) => ({ ...prev, [name]: value }))
@@ -391,16 +428,18 @@ export default function Admin() {
 
   const handleLoginSubmit = (e) => {
     e.preventDefault()
-
-    if (loginForm.username.trim() === ADMIN_USERNAME && loginForm.password === ADMIN_PASSWORD) {
-      localStorage.setItem('adminAuthenticated', 'true')
-      setIsAuthenticated(true)
-      setLoginError('')
-      setLoginForm({ username: '', password: '' })
-      return
-    }
-
-    setLoginError('Invalid credentials. Username: Admin, Password: Admin123')
+    setLoginBusy(true)
+    setTimeout(() => {
+      if (loginForm.username.trim() === ADMIN_USERNAME && loginForm.password === ADMIN_PASSWORD) {
+        localStorage.setItem('adminAuthenticated', 'true')
+        setIsAuthenticated(true)
+        setLoginError('')
+        setLoginForm({ username: '', password: '' })
+      } else {
+        setLoginError('Invalid credentials. Username: Admin, Password: Admin@123')
+      }
+      setLoginBusy(false)
+    }, 600)
   }
 
   const handleLogout = () => {
@@ -441,8 +480,11 @@ export default function Admin() {
               />
             </label>
             {loginError && <div className="admin-login-error">{loginError}</div>}
-            <button className="admin-btn-save" type="submit">Log In</button>
-            <p className="admin-login-note">Hint: username = Admin, password = Admin123</p>
+            <button className="admin-btn-save" type="submit" disabled={loginBusy}>
+              {loginBusy && <Spinner />}
+              {loginBusy ? 'Logging in…' : 'Log In'}
+            </button>
+            <p className="admin-login-note">Hint: username = Admin, password = Admin@123</p>
           </form>
         </div>
       </div>
@@ -705,11 +747,27 @@ export default function Admin() {
                         </td>
                         <td>
                           <div className="admin-action-btns">
-                            <button className="action-btn edit" title="Mark Contacted" onClick={() => handleMarkContacted(e)}>
-                              <svg viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.72 12"/></svg>
+                            <button
+                              className="action-btn edit"
+                              title="Mark Contacted"
+                              disabled={enquiryBusy[`contact-${e.id}`]}
+                              onClick={() => handleMarkContacted(e)}
+                            >
+                              {enquiryBusy[`contact-${e.id}`]
+                                ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" style={{ animation: 'spin 0.8s linear infinite' }}><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>
+                                : <svg viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.72 12"/></svg>
+                              }
                             </button>
-                            <button className="action-btn delete" title="Delete enquiry" onClick={() => handleEnquiryDelete(e.id)}>
-                              <svg viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+                            <button
+                              className="action-btn delete"
+                              title="Delete enquiry"
+                              disabled={enquiryBusy[`del-${e.id}`]}
+                              onClick={() => handleEnquiryDelete(e.id)}
+                            >
+                              {enquiryBusy[`del-${e.id}`]
+                                ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" style={{ animation: 'spin 0.8s linear infinite' }}><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>
+                                : <svg viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+                              }
                             </button>
                           </div>
                         </td>
