@@ -13,11 +13,33 @@ export default function Listings() {
   const [locationFilter, setLocationFilter] = useState('')
   const [budgetMin, setBudgetMin] = useState('')
   const [budgetMax, setBudgetMax] = useState('')
+  const [bedsFilter, setBedsFilter] = useState('Any')
   const [sortBy, setSortBy] = useState('default')
   const [searchParams] = useSearchParams()
+  const [imageIndices, setImageIndices] = useState({})
+
+  const nextImage = (propertyId, images) => {
+    setImageIndices(prev => ({
+      ...prev,
+      [propertyId]: (prev[propertyId] || 0) + 1 >= images.length ? 0 : (prev[propertyId] || 0) + 1
+    }))
+  }
+
+  const prevImage = (propertyId, images) => {
+    setImageIndices(prev => ({
+      ...prev,
+      [propertyId]: (prev[propertyId] || 0) - 1 < 0 ? images.length - 1 : (prev[propertyId] || 0) - 1
+    }))
+  }
+
+  const getCurrentImage = (property) => {
+    const images = Array.isArray(property.images) && property.images.length > 0 ? property.images : [property.image]
+    const currentIndex = imageIndices[property.id] || 0
+    return images[currentIndex] || property.image
+  }
 
   useEffect(() => {
-    setAllListings(getProperties())
+    getProperties().then(setAllListings)
   }, [])
 
   useEffect(() => {
@@ -57,16 +79,44 @@ export default function Listings() {
     }
   }, [searchParams])
 
+  // Filter first
   const filtered = allListings.filter((p) => {
     const matchSearch = p.title.toLowerCase().includes(search.toLowerCase()) || p.location.toLowerCase().includes(search.toLowerCase())
     const matchType = !typeFilter || p.type === typeFilter
     const matchStatus = !statusFilter || p.status === statusFilter
     const matchLocation = !locationFilter || locationFilter === 'All Areas' || p.location === locationFilter
-    const price = Number(p.price.toString().replace(/[^0-9]/g, '')) || 0
-    const minBudget = Number(budgetMin.toString().replace(/[^0-9]/g, '')) || 0
-    const maxBudget = Number(budgetMax.toString().replace(/[^0-9]/g, '')) || 0
-    const matchBudget = (!budgetMin && !budgetMax) || (minBudget && price >= minBudget) || (maxBudget && price <= maxBudget) || (minBudget && maxBudget && price >= minBudget && price <= maxBudget)
-    return matchSearch && matchType && matchStatus && matchLocation && matchBudget
+    const matchBeds = bedsFilter === 'Any' || (bedsFilter === '1 BHK' && p.beds === 1) || 
+                      (bedsFilter === '2 BHK' && p.beds === 2) || 
+                      (bedsFilter === '3 BHK' && p.beds === 3) || 
+                      (bedsFilter === '4+ BHK' && p.beds >= 4)
+    
+    // Fixed budget parsing and logic
+    const priceNum = Number(p.price.toString().replace(/[^0-9]/g, '')) || 0
+    const minBudgetNum = Number(budgetMin.replace(/[^0-9]/g, '')) || 0
+    const maxBudgetNum = Number(budgetMax.replace(/[^0-9]/g, '')) || Infinity
+    const matchBudget = (minBudgetNum === 0 && maxBudgetNum === Infinity) || 
+                       (priceNum >= minBudgetNum && priceNum <= maxBudgetNum)
+    
+    return matchSearch && matchType && matchStatus && matchLocation && matchBeds && matchBudget
+  })
+
+  // Apply sorting
+  const sortedFiltered = [...filtered].sort((a, b) => {
+    if (sortBy === 'price-asc') {
+      const priceA = Number(a.price.toString().replace(/[^0-9]/g, '')) || 0
+      const priceB = Number(b.price.toString().replace(/[^0-9]/g, '')) || 0
+      return priceA - priceB
+    }
+    if (sortBy === 'price-desc') {
+      const priceA = Number(a.price.toString().replace(/[^0-9]/g, '')) || 0
+      const priceB = Number(b.price.toString().replace(/[^0-9]/g, '')) || 0
+      return priceB - priceA
+    }
+    if (sortBy === 'newest') {
+      // Assume newer have lower index or use title/date if available
+      return 0 // Placeholder - needs created_at from backend if wanted
+    }
+    return 0 // default
   })
 
   return (
@@ -129,18 +179,50 @@ export default function Listings() {
                 </div>
               </div>
 
-              {filtered.length === 0 ? (
+{sortedFiltered.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--text-muted)' }}>
                   <p style={{ fontFamily: 'var(--font-serif)', fontSize: '24px', color: 'var(--white)', marginBottom: '8px' }}>No properties found</p>
                   <p>Try adjusting your search or filters.</p>
                 </div>
               ) : (
-                filtered.map((p) => (
-                  <div className="listing-row-card" key={p.id} id={`listing-row-${p.id}`}>
-                    <div className="listing-row-img">
-                      <img src={p.image} alt={p.title} loading="lazy" />
-                      <span className="listing-row-badge">{p.status}</span>
-                    </div>
+                sortedFiltered.map((p) => {
+                  const images = Array.isArray(p.images) && p.images.length > 0 ? p.images : [p.image]
+                  const currentIndex = imageIndices[p.id] || 0
+                  
+                  return (
+                    <div className="listing-row-card" key={p.id} id={`listing-row-${p.id}`}>
+                      <div className="listing-row-img">
+                        <img src={getCurrentImage(p)} alt={p.title} loading="lazy" />
+                        <span className="listing-row-badge">{p.status}</span>
+                        
+                        {images.length > 1 && (
+                          <>
+                            <button 
+                              className="listing-img-nav listing-img-prev"
+                              onClick={() => prevImage(p.id, images)}
+                              aria-label="Previous image"
+                            >
+                              ‹
+                            </button>
+                            <button 
+                              className="listing-img-nav listing-img-next"
+                              onClick={() => nextImage(p.id, images)}
+                              aria-label="Next image"
+                            >
+                              ›
+                            </button>
+                            <div className="listing-img-indicators">
+                              {images.map((_, idx) => (
+                                <span 
+                                  key={idx} 
+                                  className={`indicator ${currentIndex === idx ? 'active' : ''}`}
+                                  onClick={() => setImageIndices(prev => ({ ...prev, [p.id]: idx }))}
+                                />
+                              ))}
+                            </div>
+                          </>
+                        )}
+                      </div>
                     <div className="listing-row-body">
                       <div>
                         <div className="listing-row-price">₹{p.price}</div>
@@ -151,6 +233,11 @@ export default function Listings() {
                           </svg>
                           {p.location}
                         </p>
+                        {(p.description || p.desc) && (
+                          <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '12px', lineHeight: '1.4', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                            {p.description || p.desc}
+                          </p>
+                        )}
                         <div className="listing-row-specs">
                           <span className="listing-row-spec">
                             <svg viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
@@ -173,7 +260,8 @@ export default function Listings() {
                       </div>
                     </div>
                   </div>
-                ))
+                  )
+                })
               )}
             </div>
 
@@ -203,7 +291,7 @@ export default function Listings() {
                 </div>
                 <div className="sidebar-group">
                   <label className="sidebar-label">Bedrooms</label>
-                  <select id="sidebar-beds">
+                <select id="sidebar-beds" value={bedsFilter} onChange={(e) => setBedsFilter(e.target.value)}>
                     <option>Any</option>
                     <option>1 BHK</option>
                     <option>2 BHK</option>
@@ -211,15 +299,34 @@ export default function Listings() {
                     <option>4+ BHK</option>
                   </select>
                 </div>
-                <button className="sidebar-filter-btn" id="sidebar-apply-btn">Apply Filters</button>
+                <button className="sidebar-filter-btn" id="sidebar-apply-btn" onClick={() => { /* Filters already reactive, just visual ref */ window.scrollTo({ top: 0, behavior: 'smooth' }) }}>Apply Filters</button>
               </div>
 
               <div className="sidebar-section">
                 <h3 className="sidebar-title">Popular Searches</h3>
                 <div className="popular-tags">
-                  {popularTags.map((tag) => (
-                    <button key={tag} className="popular-tag" id={`tag-${tag.replace(/\s/g,'-').toLowerCase()}`}>{tag}</button>
-                  ))}
+{popularTags.map((tag) => {
+                    const handleTagClick = () => {
+                      if (tag.includes('BHK')) {
+                        const bedsNum = parseInt(tag);
+                        const bhkLabel = bedsNum >= 4 ? '4+ BHK' : `${bedsNum} BHK`;
+                        setBedsFilter(bhkLabel);
+                        setSearch('');
+                      } else {
+                        setSearch(tag);
+                      }
+                    };
+                    return (
+                      <button 
+                        key={tag} 
+                        className="popular-tag" 
+                        id={`tag-${tag.replace(/\s/g,'-').toLowerCase()}`}
+                        onClick={handleTagClick}
+                      >
+                        {tag}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </aside>

@@ -28,8 +28,8 @@ export default function ContactSection() {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    // save admin enquiry
-    addEnquiry({
+    // save enquiry to backend DB
+    await addEnquiry({
       name: form.name,
       phone: form.phone,
       email: form.email,
@@ -104,10 +104,10 @@ export default function ContactSection() {
             </p>
             <div className="contact-info-list">
               <div className="contact-info-item">
-                <div className="contact-info-icon"><PhoneIcon /></div>
+                <div className="contact-info-icon" style={{ margin: '20px 10px 0 0' }}><PhoneIcon /></div>
                 <div>
                   <div className="contact-info-label">Phone</div>
-                  <div className="contact-info-value">+91 89396 64747</div>
+                  <div className="contact-info-value">+91 89 39 66 4747<br />+91 89 39 11 47 47 </div>
                 </div>
               </div>
               <div className="contact-info-item">

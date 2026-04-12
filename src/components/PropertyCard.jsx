@@ -24,7 +24,7 @@ export default function PropertyCard({ property }) {
       <div className="property-card-image">
         <img src={image} alt={title} loading="lazy" />
         <div className="property-card-overlay" />
-        <span className={`property-status status-${status.toLowerCase()}`}>{status}</span>
+        <span className={`property-status status-${(status || '').toLowerCase()}`}>{status}</span>
         <button
           className="property-favourite"
           id={`fav-btn-${id}`}

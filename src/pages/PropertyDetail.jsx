@@ -81,37 +81,52 @@ export default function PropertyDetail() {
   const [property, setProperty] = useState(null)
   const [activeImg, setActiveImg] = useState(0)
 
+  const getImages = (prop) => {
+    if (!prop) return []
+    let imgs = prop.images
+    if (typeof imgs === 'string') {
+      try { imgs = JSON.parse(imgs) } catch { imgs = [imgs] }
+    }
+    if (Array.isArray(imgs) && imgs.length > 0) return imgs
+    if (prop.image) return [prop.image]
+    return []
+  }
+
   useEffect(() => {
     window.scrollTo(0, 0)
-    const storeProps = getProperties()
-    const found = storeProps.find(p => p.id === parseInt(id))
-    if (found) {
-      // Format details for the grid display
-      const detailGrid = [
-        { label: 'Property Type', val: found.propertyType, icon: '🏠' },
-        { label: 'Size', val: found.size, icon: '📏' },
-        { label: 'Rent', val: found.rent, icon: '💰' },
-        { label: 'Advance', val: found.advance, icon: '🏦' },
-        { label: 'Maintenance', val: found.maintenance, icon: '🛠️' },
-        { label: 'Bedroom', val: found.bedroom, icon: '🛏️' },
-        { label: 'Bathroom', val: found.bathroom, icon: '🛁' },
-        { label: 'Additional Room', val: found.additionalRoom, icon: '🚪' },
-        { label: 'Balconies', val: found.balconies, icon: '🌅' },
-        { label: 'Property on Floor', val: found.propertyOnFloor, icon: '🏢' },
-        { label: 'Total Floor(s)', val: found.totalFloors, icon: '🏘️' },
-        { label: 'Suitable Time To Call', val: found.suitableTime, icon: '⏰' },
-        { label: 'Servant Accommodation', val: found.servantAcc, icon: '🙋' },
-        { label: 'Pet Allowed', val: found.petAllowed, icon: '🐾' },
-        { label: 'Food Preference', val: found.foodPref, icon: '🍲' },
-        { label: 'Tenants', val: found.tenants, icon: '👨‍👩‍👧‍👦' },
-        { label: 'Facing', val: found.facing, icon: '🧭' },
-        { label: 'Age Of The Property', val: found.propertyAge, icon: '🏗️' },
-        { label: 'Parking', val: found.parking, icon: '🚗' },
-        { label: 'Furnished Status', val: found.furnishedStatus, icon: '🛋️' },
-        { label: 'Available From', val: found.availableFrom, icon: '📅' },
-      ]
-      setProperty({ ...found, detailsGrid: detailGrid })
+    async function load() {
+      const storeProps = await getProperties()
+      const found = (storeProps || []).find(p => String(p.id) === String(id))
+      if (found) {
+        const detailGrid = [
+          { label: 'Property Type', val: found.propertyType, icon: '🏠' },
+          { label: 'Size', val: found.size, icon: '📏' },
+          { label: 'Rent', val: found.rent, icon: '💰' },
+          { label: 'Advance', val: found.advance, icon: '🏦' },
+          { label: 'Maintenance', val: found.maintenance, icon: '🛠️' },
+          { label: 'Bedroom', val: found.beds ? `${found.beds} Bedroom(s)` : '-', icon: '🛏️' },
+          { label: 'Bathroom', val: found.baths ? `${found.baths} Bathroom(s)` : '-', icon: '🛁' },
+          { label: 'Additional Room', val: found.additionalRoom, icon: '🚪' },
+          { label: 'Balconies', val: found.balconies, icon: '🌅' },
+          { label: 'Property on Floor', val: found.propertyOnFloor, icon: '🏢' },
+          { label: 'Total Floor(s)', val: found.totalFloors, icon: '🏘️' },
+          { label: 'Suitable Time To Call', val: found.suitableTime, icon: '⏰' },
+          { label: 'Servant Accommodation', val: found.servantAcc, icon: '🙋' },
+          { label: 'Pet Allowed', val: found.petAllowed, icon: '🐾' },
+          { label: 'Food Preference', val: found.foodPref, icon: '🍲' },
+          { label: 'Tenants', val: found.tenants, icon: '👨‍👩‍👧‍👦' },
+          { label: 'Facing', val: found.facing, icon: '🧭' },
+          { label: 'Age Of The Property', val: found.propertyAge, icon: '🏗️' },
+          { label: 'Parking', val: found.parking, icon: '🚗' },
+          { label: 'Furnished Status', val: found.furnishedStatus, icon: '🛋️' },
+          { label: 'Available From', val: found.availableFrom, icon: '📅' },
+        ]
+        const imgs = getImages(found)
+        setProperty({ ...found, detailsGrid: detailGrid, parsedImages: imgs })
+        setActiveImg(0)
+      }
     }
+    load()
   }, [id])
 
   if (!property) return <div className="loading">Loading...</div>
@@ -131,10 +146,45 @@ export default function PropertyDetail() {
             {/* Gallery Section */}
             <div className="detail-gallery">
               <div className="gallery-main">
-                <img src={property.image} alt={property.title} />
-                <button className="gallery-nav prev">‹</button>
-                <button className="gallery-nav next">›</button>
+                <img
+                  src={property.parsedImages[activeImg] || property.image}
+                  alt={property.title}
+                />
+                {property.parsedImages.length > 1 && (
+                  <>
+                    <button
+                      className="gallery-nav prev"
+                      onClick={() => setActiveImg(i => (i === 0 ? property.parsedImages.length - 1 : i - 1))}
+                    >‹</button>
+                    <button
+                      className="gallery-nav next"
+                      onClick={() => setActiveImg(i => (i === property.parsedImages.length - 1 ? 0 : i + 1))}
+                    >›</button>
+                    <div className="gallery-indicators">
+                      {property.parsedImages.map((_, idx) => (
+                        <button
+                          key={idx}
+                          className={`indicator ${activeImg === idx ? 'active' : ''}`}
+                          onClick={() => setActiveImg(idx)}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
+              {property.parsedImages.length > 1 && (
+                <div className="gallery-thumbs">
+                  {property.parsedImages.map((img, idx) => (
+                    <button
+                      key={idx}
+                      className={`gallery-thumb ${activeImg === idx ? 'active' : ''}`}
+                      onClick={() => setActiveImg(idx)}
+                    >
+                      <img src={img} alt={`View ${idx + 1}`} />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Header Section */}
@@ -151,7 +201,7 @@ export default function PropertyDetail() {
             {/* Description Section */}
             <div className="detail-section-v2">
               <h3 className="section-label-v2">Description</h3>
-              <p className="section-text-v2">{property.desc}</p>
+              <p className="section-text-v2">{property.description || property.desc || 'No description available'}</p>
             </div>
 
             {/* Essential Info Grid */}

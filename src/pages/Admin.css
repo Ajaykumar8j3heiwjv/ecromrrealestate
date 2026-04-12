@@ -821,3 +821,7 @@ table.admin-table {
   .admin-settings-grid { grid-template-columns: 1fr; }
   .admin-form-grid { grid-template-columns: 1fr; }
 }
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

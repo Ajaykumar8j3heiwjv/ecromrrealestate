@@ -6,14 +6,14 @@ import { getProperties, addProperty, updateProperty, deleteProperty, getEnquirie
 /* ====================== DATA ====================== */
 const emptyForm = { 
   title: '', location: '', pincode: '', type: 'Apartment', status: 'Sale', price: '', 
-  beds: '', baths: '', area: '', desc: '',
+  beds: '', baths: '', area: '', description: '',
   ownerName: '', ownerRole: 'Owner', ownerPhone: '',
   propertyType: 'Apartment', size: '', rent: '', advance: '', maintenance: '',
-  bedroom: '', bathroom: '', additionalRoom: '', balconies: '',
+  additionalRoom: '', balconies: '',
   propertyOnFloor: '', totalFloors: '', suitableTime: '', servantAcc: 'No',
   petAllowed: 'Yes', foodPref: 'Veg & Non-Veg', tenants: 'Both (Family / Bachelor)',
   facing: '', propertyAge: '', parking: '', furnishedStatus: 'Fully Furnished',
-  availableFrom: '', isFeatured: true, image: ''
+  availableFrom: '', isFeatured: true, images: [], image: ''
 }
 
 /* ====================== ICONS ====================== */
@@ -27,14 +27,29 @@ const Icon = ({ path, paths }) => (
 /* ====================== MODAL ====================== */
 function PropertyModal({ mode, data, onSave, onClose }) {
   const [form, setForm] = useState(data || emptyForm)
+  const [images, setImages] = useState(Array.isArray(data?.images) ? data.images : (data?.image ? [data.image] : []))
+  
   const handle = (e) => setForm({ ...form, [e.target.name]: e.target.value })
+  
   const onImageChange = (e) => {
-    const file = e.target.files[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onloadend = () => setForm({ ...form, image: reader.result })
-      reader.readAsDataURL(file)
+    const files = e.target.files
+    if (files) {
+      Array.from(files).forEach((file) => {
+        const reader = new FileReader()
+        reader.onloadend = () => setImages(prev => [...prev, reader.result])
+        reader.readAsDataURL(file)
+      })
     }
+  }
+  
+  const removeImage = (idx) => {
+    setImages(prev => prev.filter((_, i) => i !== idx))
+  }
+  
+  const handleSave = () => {
+    // Include images in form data
+    const dataToSave = { ...form, images: images.length > 0 ? images : (form.image || null) }
+    onSave(dataToSave)
   }
 
   return (
@@ -87,11 +102,34 @@ function PropertyModal({ mode, data, onSave, onClose }) {
                   </select>
                 </div>
                 <div className="admin-form-group full">
-                  <label>Property Image (Upload)</label>
-                  <input type="file" accept="image/*" onChange={onImageChange} />
-                  {form.image && (
-                    <div style={{ marginTop: '10px' }}>
-                      <img src={form.image} alt="Preview" style={{ height: '80px', borderRadius: '4px', border: '1px solid var(--gold-mid)' }} />
+                  <label>Property Images (Upload Multiple)</label>
+                  <input type="file" accept="image/*" multiple onChange={onImageChange} />
+                  {images && images.length > 0 && (
+                    <div style={{ marginTop: '10px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                      {images.map((img, idx) => (
+                        <div key={idx} style={{ position: 'relative' }}>
+                          <img src={img} alt={`Preview ${idx}`} style={{ height: '80px', borderRadius: '4px', border: '1px solid var(--gold-mid)' }} />
+                          <button
+                            type="button"
+                            onClick={() => removeImage(idx)}
+                            style={{
+                              position: 'absolute',
+                              top: '-8px',
+                              right: '-8px',
+                              background: '#e74c3c',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '50%',
+                              width: '24px',
+                              height: '24px',
+                              cursor: 'pointer',
+                              fontSize: '16px'
+                            }}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
                     </div>
                   )}
                 </div>
@@ -106,8 +144,8 @@ function PropertyModal({ mode, data, onSave, onClose }) {
                 <div className="admin-form-group"><label>Rent Value</label><input name="rent" value={form.rent} onChange={handle} placeholder="30,000" /></div>
                 <div className="admin-form-group"><label>Advance (₹)</label><input name="advance" value={form.advance} onChange={handle} placeholder="2,00,000" /></div>
                 <div className="admin-form-group"><label>Maintenance (₹)</label><input name="maintenance" value={form.maintenance} onChange={handle} placeholder="2,000" /></div>
-                <div className="admin-form-group"><label>Bedroom Description</label><input name="bedroom" value={form.bedroom} onChange={handle} placeholder="2 Bedroom(s)" /></div>
-                <div className="admin-form-group"><label>Bathroom Description</label><input name="bathroom" value={form.bathroom} onChange={handle} placeholder="2 Bathroom(s)" /></div>
+                <div className="admin-form-group"><label>Bedrooms (Number)</label><input name="beds" type="number" value={form.beds} onChange={handle} placeholder="2" /></div>
+                <div className="admin-form-group"><label>Bathrooms (Number)</label><input name="baths" type="number" value={form.baths} onChange={handle} placeholder="2" /></div>
                 <div className="admin-form-group"><label>Additional Room</label><input name="additionalRoom" value={form.additionalRoom} onChange={handle} placeholder="Servant Room / -" /></div>
                 <div className="admin-form-group"><label>Balconies</label><input name="balconies" value={form.balconies} onChange={handle} placeholder="2" /></div>
                 <div className="admin-form-group"><label>Property On Floor</label><input name="propertyOnFloor" value={form.propertyOnFloor} onChange={handle} placeholder="8" /></div>
@@ -135,13 +173,13 @@ function PropertyModal({ mode, data, onSave, onClose }) {
 
             <div className="admin-form-group full">
               <label>Full Description</label>
-              <textarea name="desc" value={form.desc} onChange={handle} placeholder="Detailed property description..." />
+              <textarea name="description" value={form.description} onChange={handle} placeholder="Detailed property description..." />
             </div>
           </div>
         </div>
         <div className="admin-modal-footer">
           <button className="admin-btn-cancel" onClick={onClose}>Cancel</button>
-          <button className="admin-btn-save" onClick={() => onSave(form)}>
+          <button className="admin-btn-save" onClick={handleSave}>
             {mode === 'add' ? 'Add Property' : 'Save Changes'}
           </button>
         </div>
@@ -262,43 +300,75 @@ export default function Admin() {
   const [editTarget, setEditTarget] = useState(null)
   const [deleteTarget, setDeleteTarget] = useState(null)
   const [tableSearch, setTableSearch] = useState('')
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    setProperties(getProperties())
-    setEnquiries(getEnquiries())
+    async function load() {
+      setLoading(true)
+      const [props, enqs] = await Promise.all([getProperties(), getEnquiries()])
+      setProperties(props)
+      setEnquiries(enqs)
+      setLoading(false)
+    }
+    load()
   }, [])
 
   /* CRUD Handlers */
-  const handleAdd = (form) => {
-    const updated = addProperty(form)
-    setProperties(updated)
-    setModal(null)
+  const handleAdd = async (form) => {
+    try {
+      await addProperty(form)
+      const updated = await getProperties()
+      setProperties(updated)
+      setModal(null)
+    } catch (err) {
+      console.error('Add property error:', err)
+    }
   }
 
-  const handleEdit = (form) => {
-    const updated = updateProperty(form)
-    setProperties(updated)
-    setModal(null)
-    setEditTarget(null)
+  const handleEdit = async (form) => {
+    try {
+      await updateProperty(form)
+      const updated = await getProperties()
+      setProperties(updated)
+      setModal(null)
+      setEditTarget(null)
+    } catch (err) {
+      console.error('Edit property error:', err)
+    }
   }
 
   const openEdit = (prop) => { setEditTarget(prop); setModal('edit') }
   const openDelete = (prop) => setDeleteTarget(prop)
 
-  const confirmDelete = () => {
-    const updated = deleteProperty(deleteTarget.id)
-    setProperties(updated)
-    setDeleteTarget(null)
+  const confirmDelete = async () => {
+    try {
+      await deleteProperty(deleteTarget.id)
+      const updated = await getProperties()
+      setProperties(updated)
+      setDeleteTarget(null)
+    } catch (err) {
+      console.error('Delete property error:', err)
+    }
   }
 
-  const handleEnquiryDelete = (id) => {
-    const updated = deleteEnquiry(id)
-    setEnquiries(updated)
+  const handleEnquiryDelete = async (id) => {
+    try {
+      await deleteEnquiry(id)
+      const updated = await getEnquiries()
+      setEnquiries(updated)
+    } catch (err) {
+      console.error('Delete enquiry error:', err)
+    }
   }
 
-  const handleMarkContacted = (enquiry) => {
-    const updated = updateEnquiry({ ...enquiry, status: 'Contacted' })
-    setEnquiries(updated)
+  const handleMarkContacted = async (enquiry) => {
+    try {
+      await updateEnquiry({ ...enquiry, status: 'Contacted' })
+      const updated = await getEnquiries()
+      setEnquiries(updated)
+    } catch (err) {
+      console.error('Update enquiry error:', err)
+    }
   }
 
   const filteredProps = properties.filter(
@@ -375,6 +445,15 @@ export default function Admin() {
             <p className="admin-login-note">Hint: username = Admin, password = Admin123</p>
           </form>
         </div>
+      </div>
+    )
+  }
+
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: 'var(--bg-dark)', color: 'var(--gold-light)', fontFamily: 'var(--font-serif)', fontSize: '22px', gap: '12px' }}>
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ animation: 'spin 1s linear infinite' }}><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>
+        Loading…
       </div>
     )
   }

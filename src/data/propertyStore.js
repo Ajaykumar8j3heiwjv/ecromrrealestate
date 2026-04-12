@@ -1,15 +1,18 @@
-// Property Store with localStorage persistence
+// Property Store — API-backed (Supabase via Express)
+// Falls back to default seed data the very first time the DB is empty.
+
 import p1 from '../assets/property_1.png'
 import p2 from '../assets/property_2.png'
 import p3 from '../assets/property_3.png'
-import p4 from '../assets/property_4.png'
 
-const STORAGE_KEY = 'ecr_omr_properties'
-const ENQUIRIES_KEY = 'ecr_omr_enquiries'
+/* ── Base URL: use env var in production, /api proxy in dev ── */
+const BASE = import.meta.env.VITE_API_URL || '/api'
 
+/* ════════════════════════════════════════════
+   Default seed data (used to pre-populate DB)
+════════════════════════════════════════════ */
 const defaultProperties = [
   {
-    id: 1,
     image: p1,
     status: 'Rent',
     price: '30,000',
@@ -20,7 +23,7 @@ const defaultProperties = [
     baths: 2,
     area: '1028',
     type: 'Apartment',
-    desc: 'Fully furnished and gated apartment in prime location is for rent in prime location, just opposite to Tata Communications. Apartment can be rent out fully or semi-furnished upon agreement. Few minutes away from branded showrooms and other shops. Rent negotiable.',
+    desc: 'Fully furnished and gated apartment in prime location is for rent, just opposite to Tata Communications. Apartment can be rent out fully or semi-furnished upon agreement.',
     ownerName: 'Rajkumar B Thangamanian',
     ownerRole: 'Owner',
     ownerPhone: '919840422285',
@@ -29,8 +32,6 @@ const defaultProperties = [
     rent: '30,000',
     advance: '2,00,000',
     maintenance: '2,000',
-    bedroom: '2 Bedroom(s)',
-    bathroom: '2 Bathroom(s)',
     additionalRoom: '-',
     balconies: '2',
     propertyOnFloor: '8',
@@ -45,10 +46,9 @@ const defaultProperties = [
     parking: 'Both (Two/Four Wheeler)',
     furnishedStatus: 'Fully Furnished',
     availableFrom: '2024-04-10',
-    isFeatured: true
+    isFeatured: true,
   },
   {
-    id: 2,
     image: p2,
     status: 'Sale',
     price: '3,50,00,000',
@@ -68,8 +68,6 @@ const defaultProperties = [
     rent: 'N/A',
     advance: '50,00,000',
     maintenance: '5,000',
-    bedroom: '4 Bedroom(s)',
-    bathroom: '4 Bathroom(s)',
     additionalRoom: 'Servant Quarter',
     balconies: '3',
     propertyOnFloor: 'G+1',
@@ -84,10 +82,9 @@ const defaultProperties = [
     parking: '3 Cars',
     furnishedStatus: 'Semi-Furnished',
     availableFrom: 'Ready to Move',
-    isFeatured: true
+    isFeatured: true,
   },
   {
-    id: 3,
     image: p3,
     status: 'Rent',
     price: '75,000',
@@ -107,8 +104,6 @@ const defaultProperties = [
     rent: '75,000',
     advance: '5,00,000',
     maintenance: '4,000',
-    bedroom: '4 Bedroom(s)',
-    bathroom: '3 Bathroom(s)',
     additionalRoom: 'Media Room',
     balconies: '1 Large',
     propertyOnFloor: '12',
@@ -123,75 +118,113 @@ const defaultProperties = [
     parking: '2 Cars',
     furnishedStatus: 'Fully Furnished',
     availableFrom: 'Immediate',
-    isFeatured: true
-  }
+    isFeatured: true,
+  },
 ]
 
-export const getProperties = () => {
-  const stored = localStorage.getItem(STORAGE_KEY)
-  if (stored) return JSON.parse(stored)
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultProperties))
-  return defaultProperties
+/* ════════════════════════════════════════════
+   PROPERTIES
+════════════════════════════════════════════ */
+
+export async function getProperties() {
+  try {
+    const res = await fetch(`${BASE}/properties`)
+    if (!res.ok) throw new Error(`GET /properties failed: ${res.status}`)
+    const data = await res.json()
+
+    // Seed DB on first run if empty
+    if (data.length === 0) {
+      return seedProperties()
+    }
+    return data
+  } catch (err) {
+    console.error('getProperties error:', err)
+    return []
+  }
 }
 
-export const saveProperties = (properties) => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(properties))
+export async function addProperty(property) {
+  const res = await fetch(`${BASE}/properties`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(property),
+  })
+  if (!res.ok) throw new Error(`POST /properties failed: ${res.status}`)
+  return await res.json()
 }
 
-export const addProperty = (property) => {
-  const properties = getProperties()
-  const newProperty = { ...property, id: Date.now() }
-  const updated = [newProperty, ...properties]
-  saveProperties(updated)
-  return updated
+export async function updateProperty(property) {
+  const res = await fetch(`${BASE}/properties/${property.id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(property),
+  })
+  if (!res.ok) throw new Error(`PATCH /properties/${property.id} failed: ${res.status}`)
+  return await res.json()
 }
 
-export const getEnquiries = () => {
-  const stored = localStorage.getItem(ENQUIRIES_KEY)
-  if (stored) return JSON.parse(stored)
-
-  const defaultEnquiries = [
-    { id: 1, name: 'Aravind K.', phone: '9876543210', interest: 'Buy', property: 'Royal Crest Villa', date: '21 Mar 2025', status: 'New' },
-    { id: 2, name: 'Priya N.', phone: '9123456789', interest: 'Sell', property: 'Aurum Residences', date: '20 Mar 2025', status: 'Contacted' },
-    { id: 3, name: 'Suresh V.', phone: '9988776655', interest: 'Rent', property: 'Horizon Penthouse', date: '19 Mar 2025', status: 'Closed' },
-  ]
-
-  localStorage.setItem(ENQUIRIES_KEY, JSON.stringify(defaultEnquiries))
-  return defaultEnquiries
+export async function deleteProperty(id) {
+  const res = await fetch(`${BASE}/properties/${id}`, { method: 'DELETE' })
+  if (!res.ok) throw new Error(`DELETE /properties/${id} failed: ${res.status}`)
+  return await res.json()
 }
 
-export const addEnquiry = (enquiry) => {
-  const enquiries = getEnquiries()
-  const newEnquiry = { ...enquiry, id: Date.now(), date: new Date().toLocaleDateString('en-GB'), status: 'New' }
-  const updated = [newEnquiry, ...enquiries]
-  localStorage.setItem(ENQUIRIES_KEY, JSON.stringify(updated))
-  return updated
+/* ════════════════════════════════════════════
+   ENQUIRIES
+════════════════════════════════════════════ */
+
+export async function getEnquiries() {
+  try {
+    const res = await fetch(`${BASE}/enquiries`)
+    if (!res.ok) throw new Error(`GET /enquiries failed: ${res.status}`)
+    return await res.json()
+  } catch (err) {
+    console.error('getEnquiries error:', err)
+    return []
+  }
 }
 
-export const updateEnquiry = (updatedEnquiry) => {
-  const enquiries = getEnquiries()
-  const updated = enquiries.map((e) => (e.id === updatedEnquiry.id ? updatedEnquiry : e))
-  localStorage.setItem(ENQUIRIES_KEY, JSON.stringify(updated))
-  return updated
+export async function addEnquiry(enquiry) {
+  const res = await fetch(`${BASE}/enquiries`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(enquiry),
+  })
+  if (!res.ok) throw new Error(`POST /enquiries failed: ${res.status}`)
+  return await res.json()
 }
 
-export const deleteEnquiry = (id) => {
-  const enquiries = getEnquiries()
-  const updated = enquiries.filter((e) => e.id !== id)
-  localStorage.setItem(ENQUIRIES_KEY, JSON.stringify(updated))
-  return updated
+export async function updateEnquiry(enquiry) {
+  const res = await fetch(`${BASE}/enquiries/${enquiry.id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status: enquiry.status }),
+  })
+  if (!res.ok) throw new Error(`PATCH /enquiries/${enquiry.id} failed: ${res.status}`)
+  return await res.json()
 }
 
-export const updateProperty = (updatedProp) => {
-  const properties = getProperties()
-  const updated = properties.map(p => p.id === updatedProp.id ? updatedProp : p)
-  saveProperties(updated)
-  return updated
+export async function deleteEnquiry(id) {
+  const res = await fetch(`${BASE}/enquiries/${id}`, { method: 'DELETE' })
+  if (!res.ok) throw new Error(`DELETE /enquiries/${id} failed: ${res.status}`)
+  return await res.json()
 }
 
-export const deleteProperty = (id) => {
-  const properties = getProperties()
-  const updated = properties.filter(p => p.id !== id)
-  saveProperties(updated)
-  return updated
+/* ════════════════════════════════════════════
+   SEED (internal — called when DB is empty)
+════════════════════════════════════════════ */
+async function seedProperties() {
+  try {
+    const res = await fetch(`${BASE}/seed`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ properties: defaultProperties }),
+    })
+    if (!res.ok) return defaultProperties
+    // After seeding, fetch fresh list
+    const freshRes = await fetch(`${BASE}/properties`)
+    return freshRes.ok ? await freshRes.json() : defaultProperties
+  } catch {
+    return defaultProperties
+  }
 }

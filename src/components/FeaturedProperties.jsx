@@ -11,8 +11,9 @@ export default function FeaturedProperties() {
   const [allProperties, setAllProperties] = useState([])
 
   useEffect(() => {
-    const props = getProperties()
-    setAllProperties(props.filter(p => p.isFeatured))
+    getProperties().then(props => {
+      setAllProperties((props || []).filter(p => p.isFeatured))
+    })
   }, [])
 
   const filtered = activeFilter === 'All'
