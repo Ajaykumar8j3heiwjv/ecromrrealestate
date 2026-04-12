@@ -172,12 +172,17 @@ function snakifyProperty(p) {
   if (p.baths !== undefined && p.baths !== null && p.baths !== '') row.baths = Number(p.baths)
   if (p.area !== undefined && p.area !== '') row.area = p.area
   if (p.description !== undefined && p.description !== '') row.description = p.description
-  // Handle images: can be single string OR array of strings
-  if (p.images !== undefined) {
+  // Handle images — ONLY include if there is actual image content
+  // Sending an empty array ('[]') triggers Supabase schema cache errors
+  if (p.images !== undefined && p.images !== null) {
     if (Array.isArray(p.images)) {
-      row.images = JSON.stringify(p.images.filter(img => img)) // Filter out empty strings
-    } else if (p.images) {
-      row.images = JSON.stringify([p.images]) // Convert single image to array
+      const filtered = p.images.filter(img => img && img.length > 0)
+      if (filtered.length > 0) {
+        row.images = JSON.stringify(filtered) // Only set if real images exist
+      }
+      // Empty array → do NOT set row.images (avoids PGRST204 schema cache error)
+    } else if (typeof p.images === 'string' && p.images.length > 0) {
+      row.images = JSON.stringify([p.images])
     }
   } else if (p.image !== undefined && p.image !== '') {
     row.images = JSON.stringify([p.image]) // Legacy single image to array format

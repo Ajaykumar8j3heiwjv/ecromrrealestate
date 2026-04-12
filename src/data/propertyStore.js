@@ -149,7 +149,11 @@ export async function addProperty(property) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(property),
   })
-  if (!res.ok) throw new Error(`POST /properties failed: ${res.status}`)
+  if (!res.ok) {
+    let detail = `POST /properties failed: ${res.status}`
+    try { const body = await res.json(); detail += ` — ${body.error || JSON.stringify(body)}` } catch {}
+    throw new Error(detail)
+  }
   return await res.json()
 }
 
@@ -159,7 +163,11 @@ export async function updateProperty(property) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(property),
   })
-  if (!res.ok) throw new Error(`PATCH /properties/${property.id} failed: ${res.status}`)
+  if (!res.ok) {
+    let detail = `PATCH /properties/${property.id} failed: ${res.status}`
+    try { const body = await res.json(); detail += ` — ${body.error || JSON.stringify(body)}` } catch {}
+    throw new Error(detail)
+  }
   return await res.json()
 }
 
