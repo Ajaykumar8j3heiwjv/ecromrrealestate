@@ -172,20 +172,20 @@ function snakifyProperty(p) {
   if (p.baths !== undefined && p.baths !== null && p.baths !== '') row.baths = Number(p.baths)
   if (p.area !== undefined && p.area !== '') row.area = p.area
   if (p.description !== undefined && p.description !== '') row.description = p.description
-  // Handle images — ONLY include if there is actual image content
-  // Sending an empty array ('[]') triggers Supabase schema cache errors
+  // Handle images — FIXED (send array, NOT string)
   if (p.images !== undefined && p.images !== null) {
     if (Array.isArray(p.images)) {
       const filtered = p.images.filter(img => img && img.length > 0)
       if (filtered.length > 0) {
-        row.images = JSON.stringify(filtered) // Only set if real images exist
+        row.images = filtered   // ✅ CORRECT (array)
       }
-      // Empty array → do NOT set row.images (avoids PGRST204 schema cache error)
-    } else if (typeof p.images === 'string' && p.images.length > 0) {
-      row.images = JSON.stringify([p.images])
+    } 
+    else if (typeof p.images === 'string' && p.images.length > 0) {
+      row.images = [p.images]  // ✅ wrap in array
     }
-  } else if (p.image !== undefined && p.image !== '') {
-    row.images = JSON.stringify([p.image]) // Legacy single image to array format
+  } 
+  else if (p.image !== undefined && p.image !== '') {
+    row.images = [p.image]     // ✅ fallback
   }
   
   if (p.ownerName !== undefined && p.ownerName !== '') row.owner_name = p.ownerName
@@ -232,8 +232,8 @@ function camelize(p) {
     baths: p.baths,
     area: p.area,
     description: p.description || '',
-    images: p.images ? (Array.isArray(p.images) ? p.images : JSON.parse(p.images || '[]')) : [p.image].filter(Boolean),
-    image: p.image || (p.images ? (Array.isArray(p.images) ? p.images[0] : JSON.parse(p.images || '[]')[0]) : null),
+    images: p.images || [],
+    image: p.image || (p.images && p.images.length > 0 ? p.images[0] : null),
     ownerName: p.owner_name,
     ownerRole: p.owner_role,
     ownerPhone: p.owner_phone,
