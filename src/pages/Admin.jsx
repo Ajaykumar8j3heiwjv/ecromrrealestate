@@ -638,7 +638,7 @@ export default function Admin() {
                 <div className="admin-table-wrap">
                   <table className="admin-table">
                     <thead>
-                      <tr><th>Name</th><th>Phone</th><th>Interest</th><th>Property</th><th>Date</th><th>Status</th></tr>
+                      <tr><th>Name</th><th>Phone</th><th>Interest</th><th>Message</th><th>Date</th><th>Status</th></tr>
                     </thead>
                     <tbody>
                       {enquiries.map((e) => (
@@ -646,7 +646,7 @@ export default function Admin() {
                           <td style={{ fontWeight: 500, color: 'var(--white)' }}>{e.name}</td>
                           <td>{e.phone}</td>
                           <td>{e.interest}</td>
-                          <td>{e.property}</td>
+                          <td>{e.message}</td>
                           <td>{e.date}</td>
                           <td><span className={`status-tag ${e.status === 'New' ? 'new' : e.status === 'Contacted' ? 'rent' : 'inactive'}`}>{e.status}</span></td>
                         </tr>
@@ -732,7 +732,7 @@ export default function Admin() {
               <div className="admin-table-wrap">
                 <table className="admin-table">
                   <thead>
-                    <tr><th>Name</th><th>Phone</th><th>Interest</th><th>Property</th><th>Date</th><th>Status</th><th>Actions</th></tr>
+                    <tr><th>Name</th><th>Phone</th><th>Interest</th><th>Message</th><th>Date</th><th>Status</th><th>Actions</th></tr>
                   </thead>
                   <tbody>
                     {enquiries.map((e) => (
@@ -740,7 +740,7 @@ export default function Admin() {
                         <td style={{ fontWeight: 500, color: 'var(--white)' }}>{e.name}</td>
                         <td>{e.phone}</td>
                         <td>{e.interest}</td>
-                        <td>{e.property}</td>
+                        <td>{e.message}</td>
                         <td>{e.date}</td>
                         <td>
                           <span className={`status-tag ${e.status === 'New' ? 'new' : e.status === 'Contacted' ? 'rent' : 'inactive'}`}>{e.status}</span>
