@@ -176,10 +176,10 @@ function PropertyModal({ mode, data, onSave, onClose }) {
 
             {/* Section 3: Owner & Contact */}
             <div className="admin-form-section">
-              <h3 className="admin-form-section-title">Owner & Contact Details</h3>
+              <h3 className="admin-form-section-title">Agent & Contact Details</h3>
               <div className="admin-form-grid">
-                <div className="admin-form-group"><label>Owner Name</label><input name="ownerName" value={form.ownerName} onChange={handle} placeholder="Rajkumar B..." /></div>
-                <div className="admin-form-group"><label>Owner Role</label><input name="ownerRole" value={form.ownerRole} onChange={handle} placeholder="Owner / Agent" /></div>
+                <div className="admin-form-group"><label>Agent Name</label><input name="ownerName" value={form.ownerName} onChange={handle} placeholder="Agnet Name" /></div>
+                <div className="admin-form-group"><label>Agent Role</label><input name="ownerRole" value={form.ownerRole} onChange={handle} placeholder="Agent" /></div>
                 <div className="admin-form-group"><label>WhatsApp Number (w/o +)</label><input name="ownerPhone" value={form.ownerPhone} onChange={handle} placeholder="919840422285" /></div>
               </div>
             </div>
