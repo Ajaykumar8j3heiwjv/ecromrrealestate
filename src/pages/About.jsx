@@ -42,16 +42,16 @@ export default function About() {
         <p>Our team combines strong local insight with premium global best practices to deliver quick, profitable deals and satisfied clients.</p>
         <div className="about-team-grid">
           <article>
-            <h4>Ravi Kumar</h4>
-            <p>Founder & CEO — 18 years in Chennai residential & commercial markets.</p>
+            <h4>G. Dhanasekaran</h4>
+            <p>Founder & Managing Director - 20+ years in Chennai real estate.</p>
           </article>
           <article>
-            <h4>Meena Krishnan</h4>
-            <p>Head of Sales — property vetting, investor relations, and portfolio advisory.</p>
+            <h4>S. Jabaraj</h4>
+            <p>Lead manager of the real estate team.</p>
           </article>
           <article>
-            <h4>Arun Prakash</h4>
-            <p>Operations Lead — contracts, due diligence & client happiness.</p>
+            <h4>D. Sanju Mathew</h4>
+            <p>Head Sales of the real estate team.</p>
           </article>
         </div>
         <Link to="/" className="btn-primary">Back to Home</Link>
