@@ -121,7 +121,7 @@ export default function ContactSection() {
                 <div className="contact-info-icon"><MapIcon /></div>
                 <div>
                   <div className="contact-info-label">Office</div>
-                  <div className="contact-info-value">No. 12, OMR Road, Sholinganallur, Chennai – 600119</div>
+                  <div className="contact-info-value">No.4/111C, ECR Road, Pallavakkam, Chennai- 600041</div>
                 </div>
               </div>
             </div>
