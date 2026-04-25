@@ -10,6 +10,7 @@ import Admin from './pages/Admin'
 import PropertyDetail from './pages/PropertyDetail'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
+import FloatingWhatsApp from './components/FloatingWhatsApp'
 
 function ScrollToTop() {
   const { pathname, hash } = useLocation()
@@ -46,6 +47,7 @@ function Layout() {
         <Route path="/admin" element={<Admin />} />
       </Routes>
       {!isAdmin && <Footer />}
+      {!isAdmin && <FloatingWhatsApp />}
     </>
   )
 }

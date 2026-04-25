@@ -80,6 +80,81 @@
   fill: none;
 }
 
+/* WhatsApp Button — gold theme-adaptive */
+.footer-whatsapp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  padding: 13px 20px;
+  background: var(--gold-gradient);
+  border: 1px solid rgba(201, 164, 61, 0.5);
+  border-radius: 4px;
+  color: var(--black);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  letter-spacing: 0.05em;
+  transition: var(--transition);
+  cursor: pointer;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  position: relative;
+  overflow: hidden;
+}
+
+.footer-whatsapp-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--gold-shine);
+  background-size: 200% auto;
+  opacity: 0;
+  transition: var(--transition);
+}
+
+.footer-whatsapp-btn:hover::before {
+  opacity: 1;
+  background-position: right center;
+}
+
+.footer-whatsapp-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(201, 164, 61, 0.4);
+}
+
+.footer-whatsapp-btn:active {
+  transform: translateY(0);
+}
+
+.footer-whatsapp-btn svg {
+  width: 18px;
+  height: 18px;
+  fill: var(--black);
+  position: relative;
+  z-index: 1;
+}
+
+.footer-whatsapp-btn span,
+.footer-whatsapp-btn {
+  position: relative;
+  z-index: 1;
+}
+
+/* WhatsApp social icon special tint */
+.footer-social-wa {
+  background: rgba(37, 211, 102, 0.08) !important;
+  border-color: rgba(37, 211, 102, 0.3) !important;
+}
+
+.footer-social-wa:hover {
+  background: rgba(37, 211, 102, 0.18) !important;
+  border-color: rgba(37, 211, 102, 0.6) !important;
+}
+
+.footer-social-wa svg {
+  stroke: #25d366 !important;
+}
+
 /* Footer columns */
 .footer-col-title {
   font-family: var(--font-serif);
