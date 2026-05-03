@@ -1,0 +1,295 @@
+/* ===== BUSINESS CARD SECTION ===== */
+.business-card-section {
+  padding: 80px 0 100px;
+  background: var(--dark-2);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle radial background glow */
+.business-card-section::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 700px;
+  height: 400px;
+  background: radial-gradient(ellipse at center, rgba(201, 164, 61, 0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.bc-section-title {
+  font-family: var(--font-serif);
+  font-size: clamp(28px, 3.5vw, 46px);
+  font-weight: 600;
+  color: var(--white);
+  text-align: center;
+  margin-bottom: 56px;
+}
+
+.bc-section-title span {
+  background: var(--gold-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ===== CARD WRAPPER ===== */
+.bc-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 20px;
+  perspective: 1200px;
+}
+
+/* ===== BUSINESS CARD IMAGE ===== */
+.bc-image {
+  width: 100%;
+  max-width: 680px;
+  height: auto;
+  display: block;
+  border-radius: 4px;
+  box-shadow:
+    0 0 0 1px rgba(201, 164, 61, 0.08),
+    0 20px 60px rgba(0, 0, 0, 0.7),
+    0 0 80px rgba(201, 164, 61, 0.12);
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              box-shadow 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.bc-image:hover {
+  transform: translateY(-6px);
+  box-shadow:
+    0 0 0 1px rgba(201, 164, 61, 0.2),
+    0 30px 80px rgba(0, 0, 0, 0.8),
+    0 0 120px rgba(201, 164, 61, 0.2);
+}
+
+/* ===== THE CARD ===== */
+.bc-card {
+  display: none;
+}
+
+/* ===== CORNER ORNAMENTS ===== */
+.bc-ornament {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border-color: rgba(201, 164, 61, 0.5);
+  border-style: solid;
+  border-width: 0;
+  z-index: 2;
+}
+
+.bc-ornament-tl {
+  top: 14px;
+  left: 14px;
+  border-top-width: 1.5px;
+  border-left-width: 1.5px;
+}
+
+.bc-ornament-br {
+  bottom: 14px;
+  right: 14px;
+  border-bottom-width: 1.5px;
+  border-right-width: 1.5px;
+}
+
+/* ===== TOP SECTION ===== */
+.bc-top {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 44px 48px 36px;
+}
+
+/* ===== LOGO MARK ===== */
+.bc-logo-mark {
+  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
+  filter: drop-shadow(0 0 12px rgba(201, 164, 61, 0.35));
+  transition: filter 0.4s ease;
+}
+
+.bc-card:hover .bc-logo-mark {
+  filter: drop-shadow(0 0 20px rgba(201, 164, 61, 0.6));
+}
+
+.bc-logo-mark svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ===== BRAND TEXT ===== */
+.bc-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bc-brand-name {
+  font-family: var(--font-serif);
+  font-size: clamp(30px, 4vw, 48px);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--white);
+  line-height: 1;
+  background: linear-gradient(135deg, #F5D98A 0%, #C9A43D 50%, #F5D98A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.bc-brand-sub {
+  font-family: var(--font-sans);
+  font-size: clamp(10px, 1.2vw, 13px);
+  font-weight: 400;
+  letter-spacing: 0.45em;
+  color: rgba(245, 217, 138, 0.75);
+  text-transform: uppercase;
+}
+
+/* ===== GOLD DIVIDER ===== */
+.bc-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(201, 164, 61, 0.6) 20%, #C9A43D 50%, rgba(201, 164, 61, 0.6) 80%, transparent 100%);
+  margin: 0 32px;
+}
+
+/* ===== BOTTOM SECTION ===== */
+.bc-bottom {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 28px 48px 36px;
+  background: linear-gradient(90deg, rgba(201, 164, 61, 0.06) 0%, rgba(201, 164, 61, 0.02) 100%);
+}
+
+/* ===== CONTACT ITEMS ===== */
+.bc-contact {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: rgba(245, 217, 138, 0.85);
+  text-decoration: none;
+  transition: var(--transition);
+  flex: 1;
+}
+
+.bc-contact:hover {
+  color: var(--gold-light);
+}
+
+.bc-contact:hover .bc-icon {
+  color: var(--gold-mid);
+  filter: drop-shadow(0 0 6px rgba(201, 164, 61, 0.5));
+}
+
+.bc-phone {
+  padding-right: 24px;
+}
+
+.bc-address {
+  padding-left: 24px;
+}
+
+.bc-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: var(--gold-mid);
+  transition: var(--transition);
+}
+
+.bc-contact span {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  color: inherit;
+  line-height: 1.5;
+}
+
+.bc-phone span {
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  white-space: nowrap;
+}
+
+/* ===== SEPARATOR ===== */
+.bc-contact-sep {
+  width: 1px;
+  height: 44px;
+  background: linear-gradient(180deg, transparent, rgba(201, 164, 61, 0.4), transparent);
+  flex-shrink: 0;
+}
+
+/* ===== SHINE SWEEP ===== */
+.bc-shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 20%,
+    rgba(245, 217, 138, 0.04) 40%,
+    rgba(245, 217, 138, 0.06) 50%,
+    rgba(245, 217, 138, 0.04) 60%,
+    transparent 80%
+  );
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.bc-card:hover .bc-shine {
+  opacity: 1;
+  animation: bc-shine-sweep 1.2s ease forwards;
+}
+
+@keyframes bc-shine-sweep {
+  0%   { background-position: -100% center; }
+  100% { background-position: 200% center; }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+  .bc-top {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 36px 28px 28px;
+    gap: 18px;
+  }
+
+  .bc-brand-name { font-size: 36px; }
+
+  .bc-bottom {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 24px 28px 32px;
+  }
+
+  .bc-contact {
+    justify-content: center;
+    padding: 0 !important;
+    text-align: center;
+  }
+
+  .bc-contact-sep {
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(201, 164, 61, 0.4), transparent);
+  }
+
+  .bc-phone span {
+    font-size: 14px;
+    letter-spacing: 0.1em;
+  }
+
+  .bc-ornament { display: none; }
+}
