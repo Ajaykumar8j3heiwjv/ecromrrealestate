@@ -12,10 +12,10 @@ const marqueeItems = [
 const allItems = [...marqueeItems, ...marqueeItems]
 
 const stats = [
-  { num: '500+', label: 'Properties Sold' },
-  { num: '1,000+', label: 'Happy Clients' },
+  { num: '100+', label: 'Properties Sold' },
+  { num: '250+', label: 'Happy Clients' },
   { num: '20+', label: 'Years in Business' },
-  { num: '₹500Cr+', label: 'Total Portfolio' },
+  { num: '₹100Cr+', label: 'Total Portfolio' },
 ]
 
 const neighborhoods = [

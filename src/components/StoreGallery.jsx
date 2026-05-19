@@ -38,7 +38,7 @@ export default function StoreGallery() {
     <section className="store-gallery">
       <div className="container">
         <div className="store-gallery-header">
-          <h2 className="store-gallery-title">Visit Our <span>Shop</span></h2>
+          <h2 className="store-gallery-title">Visit Our <span>Office</span></h2>
           <p className="store-gallery-desc">Take a look inside our office and see where the magic happens.</p>
         </div>
 

@@ -30,7 +30,7 @@
 }
 
 .navbar-logo img {
-  height: 50px;
+  height: 60px;
   width: auto;
   transition: var(--transition);
 }
@@ -44,8 +44,8 @@
 
 .navbar-logo-name {
   font-family: var(--font-serif);
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 22px;
+  font-weight: 1000;
   letter-spacing: 0.12em;
   background: var(--gold-gradient);
   -webkit-background-clip: text;
@@ -56,8 +56,8 @@
 
 .navbar-logo-sub {
   font-family: var(--font-sans);
-  font-size: 9px;
-  font-weight: 400;
+  font-size: 12px;
+  font-weight: 600;
   letter-spacing: 0.35em;
   text-transform: uppercase;
   color: var(--text-muted);

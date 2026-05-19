@@ -35,36 +35,119 @@
   background-clip: text;
 }
 
-/* ===== CARD WRAPPER ===== */
-.bc-wrapper {
+/* ===== CARD WRAPPER & SLIDER ===== */
+.bc-carousel-wrapper {
+  position: relative;
   display: flex;
-  justify-content: center;
   align-items: center;
-  padding: 0 20px;
-  perspective: 1200px;
+  justify-content: center;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 60px;
 }
 
-/* ===== BUSINESS CARD IMAGE ===== */
-.bc-image {
+.bc-card-container {
   width: 100%;
   max-width: 680px;
-  height: auto;
-  display: block;
-  border-radius: 4px;
+  aspect-ratio: 1.75 / 1; /* Horizontal portrait/landscape ratio for standard business card */
+  overflow: hidden;
+  position: relative;
+  border-radius: 8px;
   box-shadow:
     0 0 0 1px rgba(201, 164, 61, 0.08),
     0 20px 60px rgba(0, 0, 0, 0.7),
     0 0 80px rgba(201, 164, 61, 0.12);
-  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-              box-shadow 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: box-shadow 0.3s ease;
 }
 
-.bc-image:hover {
-  transform: translateY(-6px);
+.bc-card-container:hover {
   box-shadow:
     0 0 0 1px rgba(201, 164, 61, 0.2),
     0 30px 80px rgba(0, 0, 0, 0.8),
     0 0 120px rgba(201, 164, 61, 0.2);
+}
+
+.bc-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transform: scale(0.96);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  pointer-events: none;
+}
+
+.bc-slide.active {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+.bc-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 8px;
+}
+
+/* Arrow controls */
+.bc-arrow {
+  background: var(--gold-mid);
+  color: var(--black);
+  border: none;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(201, 164, 61, 0.4);
+}
+
+.bc-arrow:hover {
+  background: var(--gold-light);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.bc-arrow.left-arrow {
+  left: 0;
+}
+
+.bc-arrow.right-arrow {
+  right: 0;
+}
+
+/* Indicators */
+.bc-dots {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.bc-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.bc-dot.active {
+  background: var(--gold-mid);
+  transform: scale(1.2);
 }
 
 /* ===== THE CARD ===== */
