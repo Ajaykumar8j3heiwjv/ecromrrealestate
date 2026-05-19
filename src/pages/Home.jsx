@@ -5,6 +5,7 @@ import BusinessCard from '../components/BusinessCard'
 import WhyChooseUs from '../components/WhyChooseUs'
 import Testimonials from '../components/Testimonials'
 import ContactSection from '../components/ContactSection'
+import StoreGallery from '../components/StoreGallery'
 
 export default function Home() {
   return (
@@ -16,6 +17,7 @@ export default function Home() {
       <BusinessCard />
       <Neighborhoods />
       <WhyChooseUs />
+      <StoreGallery />
       <Testimonials />
       <ContactSection />
     </main>
