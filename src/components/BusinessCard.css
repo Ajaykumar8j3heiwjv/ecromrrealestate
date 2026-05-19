@@ -95,7 +95,7 @@
 
 /* Arrow controls */
 .bc-arrow {
-  background: var(--gold-mid);
+  background: #C9A972;
   color: var(--black);
   border: none;
   width: 45px;
@@ -111,12 +111,13 @@
   transform: translateY(-50%);
   z-index: 10;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(201, 164, 61, 0.4);
+  box-shadow: 0 4px 15px rgba(201, 169, 114, 0.4);
 }
 
 .bc-arrow:hover {
-  background: var(--gold-light);
+  background: #E5C38C; /* A lighter premium shade of the gold */
   transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 4px 20px rgba(201, 169, 114, 0.6);
 }
 
 .bc-arrow.left-arrow {
@@ -146,7 +147,7 @@
 }
 
 .bc-dot.active {
-  background: var(--gold-mid);
+  background: #C9A972;
   transform: scale(1.2);
 }
 
