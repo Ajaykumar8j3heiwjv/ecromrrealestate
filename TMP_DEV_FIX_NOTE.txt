@@ -1,4 +1,15 @@
-1) Server-side: The error (jsxDEV is not a function) suggests the deployed bundle is out of sync or being served from cache.
-2) Repo-side changes we can safely do: force React automatic runtime explicitly in vite, and make sure no legacy JSX runtime config exists.
-3) Next code change should be in vite.config.js: add babel:false and jsxRuntime:'automatic' or include plugin-react with jsxRuntime.
+Black screen fix progress
+
+1) jsxDEV not a function
+- Updated vite.config.js to force React automatic JSX runtime
+
+2) Stale bundle caching
+- Added Cache-Control: no-store header in vercel.json
+
+3) Netlify build failure
+- Installed terser as devDependency (minify: terser)
+
+4) Remaining issue reported by user
+- Vercel warns: Environment variable reference VITE_API_URI -> secret @vite_api_url does not exist
+Next: update vercel.json env mapping so it does not reference non-existent secret; set VITE_API_URL directly to /api or remove env section.
 
