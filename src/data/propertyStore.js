@@ -9,6 +9,38 @@ import p3 from '../assets/property_3.png'
 const BASE = import.meta.env.VITE_API_URL || '/api'
 
 /* ════════════════════════════════════════════
+   IN-MEMORY + LOCALSTORAGE CACHE
+   Prevents repeated slow API fetches on page load
+════════════════════════════════════════════ */
+const CACHE_KEY = 'ecr_properties_cache'
+const CACHE_TTL = 5 * 60 * 1000 // 5 minutes
+
+let _memCache = null
+let _memCacheTime = 0
+
+function saveToLocalStorage(data) {
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ data, ts: Date.now() }))
+  } catch {}
+}
+
+function loadFromLocalStorage() {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw)
+    if (Date.now() - parsed.ts < CACHE_TTL) return parsed.data
+  } catch {}
+  return null
+}
+
+function invalidateCache() {
+  _memCache = null
+  _memCacheTime = 0
+  try { localStorage.removeItem(CACHE_KEY) } catch {}
+}
+
+/* ════════════════════════════════════════════
    Default seed data (used to pre-populate DB)
 ════════════════════════════════════════════ */
 const defaultProperties = [
@@ -127,6 +159,33 @@ const defaultProperties = [
 ════════════════════════════════════════════ */
 
 export async function getProperties() {
+  // 1. Return in-memory cache if fresh
+  if (_memCache && Date.now() - _memCacheTime < CACHE_TTL) {
+    return _memCache
+  }
+
+  // 2. Return localStorage cache if fresh
+  const localData = loadFromLocalStorage()
+  if (localData && localData.length > 0) {
+    _memCache = localData
+    _memCacheTime = Date.now()
+    // Refresh in background without blocking
+    fetchFromAPI().then(fresh => {
+      if (fresh && fresh.length > 0) {
+        _memCache = fresh
+        _memCacheTime = Date.now()
+        saveToLocalStorage(fresh)
+      }
+    }).catch(() => {})
+    return localData
+  }
+
+  // 3. Fetch from API
+  const data = await fetchFromAPI()
+  return data
+}
+
+async function fetchFromAPI() {
   try {
     const res = await fetch(`${BASE}/properties`)
     if (!res.ok) throw new Error(`GET /properties failed: ${res.status}`)
@@ -136,6 +195,11 @@ export async function getProperties() {
     if (data.length === 0) {
       return seedProperties()
     }
+
+    // Store in cache
+    _memCache = data
+    _memCacheTime = Date.now()
+    saveToLocalStorage(data)
     return data
   } catch (err) {
     console.error('getProperties error:', err)
@@ -154,6 +218,7 @@ export async function addProperty(property) {
     try { const body = await res.json(); detail += ` — ${body.error || JSON.stringify(body)}` } catch {}
     throw new Error(detail)
   }
+  invalidateCache()
   return await res.json()
 }
 
@@ -168,12 +233,14 @@ export async function updateProperty(property) {
     try { const body = await res.json(); detail += ` — ${body.error || JSON.stringify(body)}` } catch {}
     throw new Error(detail)
   }
+  invalidateCache()
   return await res.json()
 }
 
 export async function deleteProperty(id) {
   const res = await fetch(`${BASE}/properties/${id}`, { method: 'DELETE' })
   if (!res.ok) throw new Error(`DELETE /properties/${id} failed: ${res.status}`)
+  invalidateCache()
   return await res.json()
 }
 
@@ -231,7 +298,11 @@ async function seedProperties() {
     if (!res.ok) return defaultProperties
     // After seeding, fetch fresh list
     const freshRes = await fetch(`${BASE}/properties`)
-    return freshRes.ok ? await freshRes.json() : defaultProperties
+    const freshData = freshRes.ok ? await freshRes.json() : defaultProperties
+    _memCache = freshData
+    _memCacheTime = Date.now()
+    saveToLocalStorage(freshData)
+    return freshData
   } catch {
     return defaultProperties
   }
