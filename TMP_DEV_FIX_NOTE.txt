@@ -1,0 +1,4 @@
+1) Server-side: The error (jsxDEV is not a function) suggests the deployed bundle is out of sync or being served from cache.
+2) Repo-side changes we can safely do: force React automatic runtime explicitly in vite, and make sure no legacy JSX runtime config exists.
+3) Next code change should be in vite.config.js: add babel:false and jsxRuntime:'automatic' or include plugin-react with jsxRuntime.
+

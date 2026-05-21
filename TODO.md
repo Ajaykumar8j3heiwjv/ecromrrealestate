@@ -1,10 +1,5 @@
-# TODO: Fix Listings.jsx Bugs
-
-## Plan Steps:
-- [x] Step 1: Add sorting logic to filtered list based on sortBy state.
-- [x] Step 2: Fix budget filter parsing and matching logic.
-- [x] Step 3: Implement sidebar beds filter (add state + filtering).
-- [x] Step 4: Connect "Apply Filters" button to trigger refilter.
-- [x] Step 5: Add click handlers to popular tags to set filters/search.
-- [ ] Step 6: Test changes and complete.
+- [ ] Inspect current repo for JSX runtime config issues
+- [ ] Apply code change to force Vite React plugin to use automatic JSX runtime (no DEV runtime)
+- [ ] Rebuild locally and verify no jsxDEV runtime errors in production build
+- [ ] Update/verify Vercel deployment settings so latest bundle is served (no stale cache)
 

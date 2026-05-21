@@ -5,8 +5,9 @@ import react from '@vitejs/plugin-react'
 export default defineConfig(({ mode }) => ({
   plugins: [
     react({
-      // Use automatic JSX transform (React 17+ standard)
-      // No need for explicit React imports in JSX files
+      // Explicitly force automatic JSX runtime to prevent production bundles
+      // accidentally depending on the DEV JSX runtime.
+      jsxRuntime: 'automatic',
     }),
   ],
   define: {
