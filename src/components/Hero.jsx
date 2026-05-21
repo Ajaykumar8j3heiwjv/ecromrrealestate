@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import './Hero.css'
+import heroBgImg from '../assets/hero_bg.png'
 
 const tabs = ['Buy', 'Rent', 'Sell']
 const propertyTypes = ['All Types', 'Apartment', 'Villa', 'Plot', 'Commercial', 'Penthouse']
@@ -15,7 +16,7 @@ export default function Hero() {
 
   useEffect(() => {
     const img = new Image()
-    img.src = '/src/assets/hero_bg.png'
+    img.src = heroBgImg
     img.onload = () => setBgLoaded(true)
     setTimeout(() => setBgLoaded(true), 100)
   }, [])

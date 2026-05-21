@@ -68,7 +68,7 @@ export default function ContactSection() {
         payload.append('email', form.email)
         payload.append('interest', form.interest)
         payload.append('message', form.message)
-        payload.append('_next', 'http://localhost:5173')
+        payload.append('_next', window.location.origin)
 
         await fetch('https://formcarry.com/s/27X4AL2MI5l', {
           method: 'POST',
@@ -141,7 +141,7 @@ export default function ContactSection() {
             ) : (
               <form id="contact-form" onSubmit={handleSubmit}>
                 {/* FormSubmit Configuration */}
-                <input type="hidden" name="_next" value="http://localhost:5173" />
+                <input type="hidden" name="_next" value={window.location.origin} />
 
                 <div className="form-row">
                   <div className="form-group">
