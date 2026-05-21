@@ -3,10 +3,25 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => ({
-  plugins: [react()],
+  plugins: [
+    react({
+      // Use automatic JSX transform (React 17+ standard)
+      // No need for explicit React imports in JSX files
+    }),
+  ],
   define: {
     // Properly set NODE_ENV via Vite config (not .env)
     'process.env.NODE_ENV': JSON.stringify(mode),
+  },
+  build: {
+    // Ensure proper minification
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: false,
+      },
+      mangle: true,
+    },
   },
   server: {
     proxy: {
