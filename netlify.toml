@@ -1,0 +1,28 @@
+[build]
+  command = "npm install && npm run build"
+  publish = "dist"
+  functions = "api"
+
+[context.production.environment]
+  VITE_API_URL = "https://ecromrrealestate-api.onrender.com"
+  NODE_VERSION = "18"
+
+[context.deploy-preview.environment]
+  VITE_API_URL = "/api"
+  NODE_VERSION = "18"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+    X-Frame-Options = "SAMEORIGIN"
+
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
