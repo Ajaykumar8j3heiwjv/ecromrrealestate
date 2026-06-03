@@ -3,13 +3,16 @@
   publish = "dist"
   functions = "api"
 
+[env]
+  NODE_VERSION = "20"
+
 [context.production.environment]
   VITE_API_URL = "https://ecromrrealestate-api.onrender.com"
-  NODE_VERSION = "18"
+  NODE_VERSION = "20"
 
 [context.deploy-preview.environment]
   VITE_API_URL = "/api"
-  NODE_VERSION = "18"
+  NODE_VERSION = "20"
 
 [[redirects]]
   from = "/*"
