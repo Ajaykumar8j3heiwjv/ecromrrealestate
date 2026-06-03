@@ -4,18 +4,16 @@
   functions = "api"
   ignore = "git diff --quiet HEAD^ HEAD -- '*.md' 'public/*' '!public/_redirects'"
 
-[env]
+[build.environment]
+  NPM_CONFIG_PRODUCTION = "false"
   NODE_VERSION = "20"
+  NODE_OPTIONS = "--max-old-space-size=4096"
 
 [context.production.environment]
   VITE_API_URL = "https://ecromrrealestate-api.onrender.com"
-  NODE_VERSION = "20"
-  NODE_OPTIONS = "--max-old-space-size=4096"
 
 [context.deploy-preview.environment]
   VITE_API_URL = "/api"
-  NODE_VERSION = "20"
-  NODE_OPTIONS = "--max-old-space-size=4096"
 
 [[redirects]]
   from = "/*"
