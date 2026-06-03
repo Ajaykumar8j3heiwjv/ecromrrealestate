@@ -10,7 +10,7 @@
   NODE_OPTIONS = "--max-old-space-size=4096"
 
 [context.production.environment]
-  VITE_API_URL = "https://ecromrrealestate-api.onrender.com"
+  VITE_API_URL = "/api"
 
 [context.deploy-preview.environment]
   VITE_API_URL = "/api"
