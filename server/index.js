@@ -39,13 +39,23 @@ app.get('/', (req, res) => {
 
 // GET all properties
 app.get('/properties', async (req, res) => {
-  const { data, error } = await supabase
-    .from('properties')
-    .select('*')
-    .order('created_at', { ascending: false })
+  try {
+    console.log('GET /properties — querying supabase...')
+    const { data, error } = await supabase
+      .from('properties')
+      .select('*')
+      .order('created_at', { ascending: false })
 
-  if (error) return res.status(500).json({ error: error.message })
-  res.json(camelizeAll(data))
+    if (error) {
+      console.error('Supabase GET error:', error.message, error.details, error.hint)
+      return res.status(500).json({ error: error.message, details: error.details })
+    }
+    console.log('GET /properties — returned', (data || []).length, 'rows')
+    res.json(camelizeAll(data))
+  } catch (err) {
+    console.error('Unexpected GET /properties error:', err.message, err.stack)
+    res.status(500).json({ error: err.message })
+  }
 })
 
 // POST create property
