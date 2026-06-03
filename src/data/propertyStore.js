@@ -45,6 +45,7 @@ function invalidateCache() {
 ════════════════════════════════════════════ */
 const defaultProperties = [
   {
+    id: 1,
     image: p1,
     status: 'Rent',
     price: '30,000',
@@ -81,6 +82,7 @@ const defaultProperties = [
     isFeatured: true,
   },
   {
+    id: 2,
     image: p2,
     status: 'Sale',
     price: '3,50,00,000',
@@ -117,6 +119,7 @@ const defaultProperties = [
     isFeatured: true,
   },
   {
+    id: 3,
     image: p3,
     status: 'Rent',
     price: '75,000',
@@ -203,7 +206,12 @@ async function fetchFromAPI() {
     return data
   } catch (err) {
     console.error('getProperties error:', err)
-    return []
+    // Fallback to default properties when API fails
+    console.log('API unavailable, using default seed data')
+    _memCache = defaultProperties
+    _memCacheTime = Date.now()
+    saveToLocalStorage(defaultProperties)
+    return defaultProperties
   }
 }
 
