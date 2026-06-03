@@ -161,7 +161,12 @@ const defaultProperties = [
    PROPERTIES
 ════════════════════════════════════════════ */
 
-export async function getProperties() {
+export async function getProperties(forceRefresh = false) {
+  // Force refresh mode - skip all caches
+  if (forceRefresh) {
+    return await fetchFromAPI()
+  }
+
   // 1. Return in-memory cache if fresh
   if (_memCache && Date.now() - _memCacheTime < CACHE_TTL) {
     return _memCache
@@ -250,6 +255,12 @@ export async function deleteProperty(id) {
   if (!res.ok) throw new Error(`DELETE /properties/${id} failed: ${res.status}`)
   invalidateCache()
   return await res.json()
+}
+
+// Force refresh - clears cache and fetches fresh data
+export async function refreshProperties() {
+  invalidateCache()
+  return await getProperties(true)
 }
 
 /* ════════════════════════════════════════════

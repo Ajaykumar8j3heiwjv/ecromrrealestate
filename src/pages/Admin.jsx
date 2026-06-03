@@ -341,7 +341,7 @@ export default function Admin() {
   const handleAdd = async (form) => {
     try {
       await addProperty(form)
-      const updated = await getProperties()
+      const updated = await getProperties(true) // Force fresh data
       setProperties(updated)
       setModal(null)
     } catch (err) {
@@ -353,7 +353,7 @@ export default function Admin() {
   const handleEdit = async (form) => {
     try {
       await updateProperty(form)
-      const updated = await getProperties()
+      const updated = await getProperties(true) // Force fresh data
       setProperties(updated)
       setModal(null)
       setEditTarget(null)

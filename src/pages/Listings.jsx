@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import './Listings.css'
-import { getProperties } from '../data/propertyStore'
+import { getProperties, refreshProperties } from '../data/propertyStore'
 
 const popularTags = ['3 BHK', 'Sea View', 'Gated Community', 'North Facing', 'Ready to Move', 'Under Construction']
 
@@ -34,6 +34,7 @@ function ListingSkeleton() {
 export default function Listings() {
   const [allListings, setAllListings] = useState([])
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
@@ -63,6 +64,20 @@ export default function Listings() {
     const images = Array.isArray(property.images) && property.images.length > 0 ? property.images : [property.image]
     const currentIndex = imageIndices[property.id] || 0
     return images[currentIndex] || property.image
+  }
+
+  // Handle manual refresh
+  const handleRefresh = async () => {
+    setRefreshing(true)
+    try {
+      const data = await refreshProperties()
+      setAllListings(data)
+    } catch (err) {
+      console.error('Refresh error:', err)
+      alert('Failed to refresh properties')
+    } finally {
+      setRefreshing(false)
+    }
   }
 
   useEffect(() => {
@@ -202,6 +217,36 @@ export default function Listings() {
                     <option value="price-desc">Price: High to Low</option>
                     <option value="newest">Newest First</option>
                   </select>
+                  <button 
+                    className="listings-refresh-btn"
+                    onClick={handleRefresh}
+                    disabled={refreshing || loading}
+                    title="Refresh to see latest properties"
+                    style={{
+                      marginLeft: '12px',
+                      padding: '8px 14px',
+                      backgroundColor: refreshing ? 'var(--gold-mid)' : 'transparent',
+                      border: '1px solid var(--gold-mid)',
+                      color: 'var(--gold-mid)',
+                      borderRadius: '4px',
+                      cursor: refreshing ? 'not-allowed' : 'pointer',
+                      fontSize: '13px',
+                      fontWeight: '500',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      opacity: refreshing || loading ? 0.6 : 1,
+                      transition: 'all 0.3s ease'
+                    }}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{
+                      animation: refreshing ? 'spin 0.8s linear infinite' : 'none'
+                    }}>
+                      <path d="M1 4v6h6M23 20v-6h-6"/>
+                      <path d="M20.49 9A9 9 0 0 0 5.64 5.64M3.51 15A9 9 0 0 0 18.36 18.36"/>
+                    </svg>
+                    {refreshing ? 'Refreshing…' : 'Refresh'}
+                  </button>
                 </div>
               </div>
 
