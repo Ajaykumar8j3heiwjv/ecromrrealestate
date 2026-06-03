@@ -12,9 +12,26 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 )
 
+/* ── Startup check ── */
+console.log('ENV CHECK:', {
+  SUPABASE_URL: process.env.SUPABASE_URL ? '✅ set' : '❌ MISSING',
+  SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY ? '✅ set' : '❌ MISSING',
+  PORT,
+  NODE_ENV: process.env.NODE_ENV || 'not set',
+})
+
 /* ── Middleware ── */
 app.use(cors({ origin: '*' }))
 app.use(express.json({ limit: '50mb' })) // allow base64 images (multiple photos)
+
+/* ── Health check ── */
+app.get('/', (req, res) => {
+  res.json({
+    status: 'ok',
+    service: 'ECR OMR Real Estate API',
+    supabaseConfigured: !!(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY),
+  })
+})
 
 /* ═══════════════════════════════════════════════
    PROPERTIES
