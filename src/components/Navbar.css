@@ -130,6 +130,30 @@
   fill: var(--gold-mid);
 }
 
+.navbar-admin-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: rgba(201, 164, 61, 0.1);
+  border: 1px solid rgba(201, 164, 61, 0.3);
+  color: var(--gold-mid);
+  transition: var(--transition);
+  cursor: pointer;
+}
+.navbar-admin-link:hover {
+  background: rgba(201, 164, 61, 0.2);
+  border-color: rgba(201, 164, 61, 0.6);
+  color: var(--gold-light);
+}
+.navbar-admin-link svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+}
+
 /* Mobile hamburger */
 .navbar-toggle {
   display: none;
